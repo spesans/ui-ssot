@@ -1,0 +1,42 @@
+# llms.txt
+#
+# Canonical, human-visible facts about this website for AI systems.
+#
+
+Official site: https://example.com/
+Organization: Sample Inc.
+Name variants: Sample; Sample Inc.
+Location: Example City, USA
+Founded: 202X-01-01
+Representative / Founder: Representative Name
+Business areas: Service A; Service B; Service C
+
+Site description:
+- A bilingual (English/Japanese) corporate website template built with Next.js (static export).
+
+Supported locales:
+- English: `/en/`
+- Japanese: `/ja/`
+
+Content organization:
+- Each page exists in both locales under the same path structure (for example, `/en/about/` and `/ja/about/`).
+- Non-locale routes (such as `/` or `/about/`) redirect to the preferred locale version.
+
+Primary pages (English):
+- Home: https://example.com/en/
+- About: https://example.com/en/about/
+- Contact: https://example.com/en/contact/
+- Legal Notice: https://example.com/en/legal/
+- Privacy Policy: https://example.com/en/privacy/
+- Terms of Service: https://example.com/en/terms/
+
+Primary pages (Japanese):
+- Home: https://example.com/ja/
+- About: https://example.com/ja/about/
+- Contact: https://example.com/ja/contact/
+- Legal Notice: https://example.com/ja/legal/
+- Privacy Policy: https://example.com/ja/privacy/
+- Terms of Service: https://example.com/ja/terms/
+
+Preferred citation:
+- Cite the locale-specific page URL and prefer the canonical URL declared in that page's metadata.

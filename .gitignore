@@ -1,0 +1,24 @@
+# OS / editor
+.DS_Store
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/.next/
+**/out/
+**/dist/
+**/build/
+**/coverage/
+
+# Env files
+**/.env*
+!**/.env.example
+
+# Logs
+**/*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

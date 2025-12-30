@@ -1,0 +1,294 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+[data-theme="dark"] {
+  /* Single source of truth: minimal monochrome (dark) */
+  --background: #000000;
+  --foreground: #ffffff;
+
+  /* Cards: no fill, with border */
+  --card-bg: #000000;
+  --card-title-bg: #1a1a1a;
+  --border-color: #333333;
+  --border-color-light: #1a1a1a;
+  --input-bg: #141414;
+  --input-border: #2b2b2b;
+  --input-border-hover: #3a3a3a;
+  --input-border-focus: var(--accent-indicator);
+  --input-ring: rgba(102, 153, 204, 0.4);
+  --danger-text: #f87171;
+  --danger-border: rgba(248, 113, 113, 0.4);
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --danger-ring: rgba(248, 113, 113, 0.35);
+
+  /* Text hierarchy */
+  --text-muted: #999999;
+  --text-subtle: #999999;
+
+  /* Links */
+  --link-color: #6699cc;
+
+  /* AppShell */
+  --surface-2: #1a1a1a;
+  --surface-3: #262626;
+  --border-color-strong: #444444;
+  --overlay: rgba(0, 0, 0, 0.6);
+  --accent-subtle: #1a1a1a;
+  --accent-indicator: #6699cc;
+  --sidebar-width: 11rem;
+
+  /* Brand logo (text) */
+  --brand-logo-height: 32px;
+  --brand-logo-square-size: 32px;
+  --brand-logo-full-max-width: 220px;
+  --brand-logo-font-size: 20px;
+  --brand-logo-viewport-safe-offset: 120px;
+}
+
+[data-theme="light"] {
+  /* Single source of truth: minimal monochrome (light) */
+  --background: #ffffff;
+  --foreground: #000000;
+
+  /* Cards: no fill, with border */
+  --card-bg: #ffffff;
+  --card-title-bg: #f0f0f0;
+  --border-color: #d0d0d0;
+  --border-color-light: #e8e8e8;
+  --input-bg: #f5f5f5;
+  --input-border: #c9c9c9;
+  --input-border-hover: #b8b8b8;
+  --input-border-focus: var(--accent-indicator);
+  --input-ring: rgba(0, 102, 204, 0.25);
+  --danger-text: #b91c1c;
+  --danger-border: rgba(220, 38, 38, 0.35);
+  --danger-bg: rgba(220, 38, 38, 0.08);
+  --danger-ring: rgba(220, 38, 38, 0.25);
+
+  /* Text hierarchy */
+  --text-muted: #333333;
+  --text-subtle: #666666;
+
+  /* Links */
+  --link-color: #0066cc;
+
+  /* AppShell */
+  --surface-2: #f0f0f0;
+  --surface-3: #e5e5e5;
+  --border-color-strong: #c0c0c0;
+  --overlay: rgba(0, 0, 0, 0.4);
+  --accent-subtle: #f0f0f0;
+  --accent-indicator: #0066cc;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Typography refinements */
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  p {
+    line-height: 1.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Print styles */
+@media print {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --text-muted: #333333;
+    --text-subtle: #666666;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide navigation and controls */
+  header,
+  aside,
+  [role="dialog"],
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* Remove shadows and backgrounds */
+  * {
+    box-shadow: none !important;
+  }
+
+  /* Ensure links are visible */
+  a {
+    text-decoration: underline;
+  }
+
+  /* Page breaks */
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+
+  section {
+    page-break-inside: avoid;
+  }
+}
+
+@layer components {
+  /* Scroll-responsive Sidebar Header */
+  .sidebar-header {
+    height: calc(96px - (40px * var(--scroll-progress, 0)));
+  }
+
+  .sidebar-header .sidebar-header__row {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 200ms ease,
+      transform 220ms ease;
+    will-change: opacity, transform;
+  }
+
+  .sidebar-header .logo-full,
+  .sidebar-header .logo-square {
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease;
+    will-change: opacity, transform;
+  }
+
+  .sidebar-header[data-stage="1"] .logo-full {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    transform-origin: left center;
+  }
+  .sidebar-header[data-stage="1"] .logo-square {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(-50% + 2px)) scale(0.98);
+  }
+
+  .sidebar-header[data-stage="2"] .logo-full {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-2px) scale(0.98);
+    transform-origin: left center;
+  }
+  .sidebar-header[data-stage="2"] .logo-square {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) scale(1);
+  }
+
+  .sidebar-header[data-stage="3"] .logo-full {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-2px) scale(0.98);
+    transform-origin: left center;
+  }
+  .sidebar-header[data-stage="3"] .logo-square {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) scale(1);
+  }
+
+  /* Hide controls in stage 3 (reveal immediately on scroll up via JS stage override) */
+  .sidebar-header[data-stage="3"] .sidebar-header__row {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .sidebar-header[data-stage="3"] .sidebar-toggle {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .top-controls {
+    transition:
+      opacity 200ms ease,
+      transform 220ms ease;
+  }
+
+  .top-controls[data-stage="3"] {
+    opacity: 0;
+    pointer-events: none;
+    --tw-translate-y: -8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-header {
+    height: 96px !important;
+  }
+  .sidebar-header .sidebar-header__row {
+    transition: none !important;
+    transform: none !important;
+  }
+  .sidebar-header .logo-full {
+    opacity: 1 !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .sidebar-header .logo-square {
+    opacity: 0 !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .sidebar-header .sidebar-toggle {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .top-controls {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    --tw-translate-y: 0px !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
