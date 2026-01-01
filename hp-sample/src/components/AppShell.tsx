@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, Globe, Moon, PanelLeft, PanelLeftClose, Sun } from "lucide-react";
+import { ChevronDown, Moon, PanelLeft, PanelLeftClose, Sun } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { LANGUAGES, languageMetadata, type Language } from "@/lib/dictionary";
 import { NAVIGATION_ITEMS } from "@/lib/config/navigation";
@@ -325,7 +325,7 @@ export function AppShell({ children, footer }: AppShellProps) {
             <div className="sidebar-header__row pl-4 pr-3 flex items-center justify-between gap-2">
               <Link
                 href={toLocalePath("/", routeLanguage)}
-                className="min-w-0 flex-1 text-sm md:text-base font-semibold tracking-tight whitespace-nowrap relative"
+                className="min-w-0 flex-1 pl-4 text-sm md:text-base font-semibold tracking-tight whitespace-nowrap relative"
                 aria-label={`${SITE_NAME} ${t.nav.home}`}
               >
                 <span className="logo-full relative flex items-center h-[var(--brand-logo-height)] w-[min(var(--brand-logo-full-max-width),calc(100vw-var(--brand-logo-viewport-safe-offset)))] max-w-full text-[length:var(--brand-logo-font-size)] font-bold tracking-tighter">
@@ -378,7 +378,6 @@ export function AppShell({ children, footer }: AppShellProps) {
                     aria-label={t.a11y.selectLanguage}
                   >
                     <span className="flex items-center gap-2 min-w-0">
-                      <Globe className="w-4 h-4 flex-shrink-0" />
                       <span className="truncate">{languageMetadata[language].nativeName}</span>
                     </span>
                     <ChevronDown
