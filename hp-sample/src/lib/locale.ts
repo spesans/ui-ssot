@@ -6,6 +6,30 @@ export const ROUTE_LANGUAGES = LANGUAGES;
 export const DEFAULT_ROUTE_LANGUAGE: RouteLanguage = DEFAULT_LANGUAGE;
 export const LANGUAGE_STORAGE_KEY = "sample-site-lang";
 
+/**
+ * BCP47 tag mapping for each supported route language.
+ */
+export const BCP47_TAGS: Record<RouteLanguage, string> = {
+  en: "en-US",
+  ja: "ja-JP",
+  zh: "zh-CN",
+  hi: "hi-IN",
+  es: "es-ES",
+  ar: "ar",
+  bn: "bn-BD",
+  fr: "fr-FR",
+  ru: "ru-RU",
+  pt: "pt-PT",
+  id: "id-ID",
+  de: "de-DE",
+  ko: "ko-KR",
+};
+
+/**
+ * Get the BCP47 tag for a given route language.
+ */
+export const getBcp47Tag = (lang: RouteLanguage): string => BCP47_TAGS[lang];
+
 export const resolveBrowserRouteLanguage = (): RouteLanguage => {
   if (typeof window === "undefined") return DEFAULT_ROUTE_LANGUAGE;
 
@@ -17,8 +41,15 @@ export const resolveBrowserRouteLanguage = (): RouteLanguage => {
   for (const candidate of candidates) {
     if (typeof candidate !== "string") continue;
     const normalized = candidate.toLowerCase();
-    if (normalized.startsWith("ja")) return "ja";
-    if (normalized.startsWith("en")) return "en";
+    const primary = normalized.split("-")[0];
+
+    // Handle legacy "in" code for Indonesian
+    const effectivePrimary = primary === "in" ? "id" : primary;
+
+    // Check if the primary subtag matches any supported language
+    if ((LANGUAGES as readonly string[]).includes(effectivePrimary)) {
+      return effectivePrimary as RouteLanguage;
+    }
   }
 
   return DEFAULT_ROUTE_LANGUAGE;

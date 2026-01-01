@@ -1,6 +1,6 @@
 # Next.js Corporate Website Template
 
-A generic, bilingual (JA/EN) corporate website template built with Next.js (App Router) and Tailwind CSS.
+A generic, multilingual (13 locales) corporate website template built with Next.js (App Router) and Tailwind CSS.
 
 ## Documentation
 
@@ -11,9 +11,29 @@ A generic, bilingual (JA/EN) corporate website template built with Next.js (App 
 ## Features
 
 - Static export (`output: "export"`) for simple hosting
-- Bilingual routing (`/ja`, `/en`) with language switcher + locale redirects
+- Multilingual routing with 13 locales (`/en`, `/ja`, `/zh`, `/hi`, `/es`, `/ar`, `/bn`, `/fr`, `/ru`, `/pt`, `/id`, `/de`, `/ko`) with language switcher + locale redirects
+- Automatic browser language detection with fallback to English
+- RTL support for Arabic
 - Pages: Home, About, Contact, Terms, Privacy, Legal
-- Responsive layout with theme toggle
+- Responsive layout with theme toggle (dark mode default)
+
+## Supported Locales
+
+| Code | Language   | Native Name      |
+| ---- | ---------- | ---------------- |
+| en   | English    | English          |
+| ja   | Japanese   | 日本語           |
+| zh   | Chinese    | 中文             |
+| hi   | Hindi      | हिन्दी           |
+| es   | Spanish    | Español          |
+| ar   | Arabic     | العربية (RTL)    |
+| bn   | Bengali    | বাংলা            |
+| fr   | French     | Français         |
+| ru   | Russian    | Русский          |
+| pt   | Portuguese | Português        |
+| id   | Indonesian | Bahasa Indonesia |
+| de   | German     | Deutsch          |
+| ko   | Korean     | 한국어           |
 
 ## Getting Started
 

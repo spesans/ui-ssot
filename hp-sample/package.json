@@ -2,7 +2,7 @@
   "name": "nextjs-corporate-site-template",
   "version": "0.1.0",
   "private": true,
-  "description": "A generic, bilingual Next.js corporate website template.",
+  "description": "A generic, multilingual (13 locales) Next.js corporate website template.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

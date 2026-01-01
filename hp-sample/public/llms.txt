@@ -12,15 +12,27 @@ Representative / Founder: Representative Name
 Business areas: Service A; Service B; Service C
 
 Site description:
-- A bilingual (English/Japanese) corporate website template built with Next.js (static export).
+- A multilingual (13 locales) corporate website template built with Next.js (static export).
 
 Supported locales:
 - English: `/en/`
 - Japanese: `/ja/`
+- Chinese: `/zh/`
+- Hindi: `/hi/`
+- Spanish: `/es/`
+- Arabic: `/ar/` (RTL)
+- Bengali: `/bn/`
+- French: `/fr/`
+- Russian: `/ru/`
+- Portuguese: `/pt/`
+- Indonesian: `/id/`
+- German: `/de/`
+- Korean: `/ko/`
 
 Content organization:
-- Each page exists in both locales under the same path structure (for example, `/en/about/` and `/ja/about/`).
-- Non-locale routes (such as `/` or `/about/`) redirect to the preferred locale version.
+- Each page exists in all 13 locales under the same path structure (for example, `/en/about/` and `/ja/about/`).
+- Non-locale routes (such as `/` or `/about/`) redirect to the preferred locale version based on browser language settings.
+- Default fallback language is English (`/en/`).
 
 Primary pages (English):
 - Home: https://example.com/en/

@@ -11,7 +11,7 @@ last_updated: 2026-01-01
 
 ## Project overview
 
-`hp-sample/` is a bilingual (JA/EN) corporate website template built with Next.js (App Router) and Tailwind CSS.
+`hp-sample/` is a multilingual (13 locales) corporate website template built with Next.js (App Router) and Tailwind CSS.
 
 ## Setup commands
 

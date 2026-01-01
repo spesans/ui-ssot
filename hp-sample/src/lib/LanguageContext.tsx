@@ -23,7 +23,7 @@ const getStoredLanguage = (): Language | null => {
   if (typeof window === "undefined") return null;
   try {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return saved === "en" || saved === "ja" ? saved : null;
+    return isRouteLanguage(saved) ? saved : null;
   } catch {
     return null;
   }
@@ -32,18 +32,18 @@ const getStoredLanguage = (): Language | null => {
 const getDocumentLanguage = (): Language | null => {
   if (typeof document === "undefined") return null;
   const current = document.documentElement.lang;
-  return current === "en" || current === "ja" ? current : null;
+  return isRouteLanguage(current) ? current : null;
 };
 
 const getInitialLanguage = (): Language => {
   if (typeof window === "undefined") return DEFAULT_ROUTE_LANGUAGE;
 
   const routeLang = getRouteLanguageFromPath(window.location.pathname);
-  const stored = getStoredLanguage();
-
-  if (routeLang && stored && isRouteLanguage(stored)) return routeLang;
-  if (stored) return stored;
   if (routeLang) return routeLang;
+
+  const stored = getStoredLanguage();
+  if (stored) return stored;
+
   return getDocumentLanguage() ?? resolveBrowserRouteLanguage();
 };
 

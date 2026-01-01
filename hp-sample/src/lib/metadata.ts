@@ -13,15 +13,29 @@ const normalizedSiteUrl = getNormalizedSiteUrl();
 const ogImageUrl = `${normalizedSiteUrl}/og-image.png`;
 
 const OG_LOCALE: Record<RouteLanguage, string> = {
-  ja: "ja_JP",
   en: "en_US",
+  ja: "ja_JP",
+  zh: "zh_CN",
+  hi: "hi_IN",
+  es: "es_ES",
+  ar: "ar_AR",
+  bn: "bn_BD",
+  fr: "fr_FR",
+  ru: "ru_RU",
+  pt: "pt_PT",
+  id: "id_ID",
+  de: "de_DE",
+  ko: "ko_KR",
 };
 
-const buildLanguageAlternates = (path: string) => ({
-  ja: getCanonicalUrl(toLocalePath(path, "ja")),
-  en: getCanonicalUrl(toLocalePath(path, "en")),
-  "x-default": getCanonicalUrl(toLocalePath(path, "en")),
-});
+const buildLanguageAlternates = (path: string) => {
+  const alternates: Record<string, string> = {};
+  for (const lang of ROUTE_LANGUAGES) {
+    alternates[lang] = getCanonicalUrl(toLocalePath(path, lang));
+  }
+  alternates["x-default"] = getCanonicalUrl(toLocalePath(path, DEFAULT_ROUTE_LANGUAGE));
+  return alternates;
+};
 
 export function createLocalizedMetadata({
   lang,

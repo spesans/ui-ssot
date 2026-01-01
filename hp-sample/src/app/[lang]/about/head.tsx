@@ -1,4 +1,4 @@
-import { DEFAULT_ROUTE_LANGUAGE, isRouteLanguage, toLocalePath } from "@/lib/locale";
+import { DEFAULT_ROUTE_LANGUAGE, getBcp47Tag, isRouteLanguage, toLocalePath } from "@/lib/locale";
 import { getSeoEntry } from "@/lib/seo";
 import { getCanonicalUrl, getNormalizedSiteUrl } from "@/lib/site";
 
@@ -16,7 +16,7 @@ export default async function Head({ params }: AboutHeadProps) {
   const { title, description } = getSeoEntry(lang, "about");
   const canonicalUrl = getCanonicalUrl(toLocalePath("/about", lang));
   const name = title ?? "About";
-  const inLanguage = lang === "ja" ? "ja-JP" : "en-US";
+  const inLanguage = getBcp47Tag(lang);
 
   const aboutPageJsonLd = {
     "@context": "https://schema.org",

@@ -1,4 +1,5 @@
 import { getCanonicalUrl, getNormalizedSiteUrl } from "@/lib/site";
+import { ROUTE_LANGUAGES, getBcp47Tag } from "@/lib/locale";
 
 export const COMPANY_NAME_VARIANTS = ["Sample", "Sample Inc."];
 
@@ -42,7 +43,7 @@ export const buildStructuredData = () => {
     url: canonicalUrl,
     name: ORGANIZATION_NAME,
     alternateName: COMPANY_NAME_VARIANTS,
-    inLanguage: ["en-US", "ja-JP"],
+    inLanguage: ROUTE_LANGUAGES.map(getBcp47Tag),
     publisher: {
       "@id": `${canonicalUrl}#organization`,
     },
