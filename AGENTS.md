@@ -4,10 +4,16 @@ slug: ui-ssot-agents
 summary: "How to work in this repo"
 type: guide
 tags: [agents, repository]
-last_updated: 2025-12-30
+last_updated: 2026-01-01
 ---
 
 # AGENTS.md
+
+## Primary directives
+
+- Communicate with the user in **Japanese** unless explicitly requested otherwise.
+- Write **all code and documentation in English**.
+- Any Git/GitHub-facing text (branches, commits, PRs, issues, comments, docs) must be **English**.
 
 ## Repo overview
 
@@ -21,5 +27,5 @@ This repository contains multiple UI sample projects. Each sample directory is a
 
 ## Common commands
 
-- `hp-sample/` verification: `cd hp-sample && npm run verify`
-
+- `hp-sample/` verification gate: `cd hp-sample && npm run verify`
+- `hp-sample/` dev server: `cd hp-sample && npm run dev`

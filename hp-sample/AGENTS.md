@@ -4,7 +4,7 @@ slug: hp-sample-agents
 summary: "Operational commands and scope rules"
 type: guide
 tags: [agents, nextjs, tooling]
-last_updated: 2025-12-30
+last_updated: 2026-01-01
 ---
 
 # AGENTS.md
@@ -21,7 +21,7 @@ last_updated: 2025-12-30
 
 ## Build & verification
 
-- Verification gate: `npm run verify`
+- Verification gate (MUST): `npm run verify`
 
 ## Code style
 

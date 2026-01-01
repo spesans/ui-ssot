@@ -32,7 +32,7 @@ const config = [
 
   eslintJs.configs.recommended,
   ...nextConfig,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   prettierConfig,
 

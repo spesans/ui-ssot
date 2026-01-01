@@ -8,10 +8,6 @@ UI sample projects (templates / reference implementations). Each sample is self-
 
 ## Quick start
 
-Pick a sample and follow its `README.md`.
-
-Example (`hp-sample/`):
-
 ```bash
 cd hp-sample
 npm install

@@ -4,14 +4,14 @@ slug: hp-sample-ssot
 summary: "Canonical sources and development rules"
 type: spec
 tags: [ssot, nextjs, typescript, tooling]
-last_updated: 2025-12-30
+last_updated: 2026-01-01
 ---
 
 # HP Sample SSOT
 
 ## Project SSOT (MUST)
 
-This file is the **single Project SSOT** for `hp-sample/`.
+This file is the single Project SSOT for `hp-sample/`.
 
 If something is defined in more than one place, this file decides which one is canonical.
 
@@ -19,22 +19,27 @@ If something is defined in more than one place, this file decides which one is c
 
 ### Branding
 
-- Brand name and logo text: `lib/config/branding.ts`
-- Navigation labels and routes: `lib/config/navigation.ts`
-- Design tokens (including logo sizing tokens): `app/globals.css`
+- Brand name and logo text: `src/lib/config/branding.ts`
+- Navigation labels and routes: `src/lib/config/navigation.ts`
+- Design tokens (including logo sizing tokens): `src/app/globals.css`
 
 ### Environment variables
 
-- Public env schema + validation: `lib/env/public.ts`
+- Public env schema + validation: `src/lib/env/public.ts`
 - Public env usage:
-  - Canonical site URL: `lib/site.ts`
-  - Contact endpoint: `components/ContactSection.tsx`
+  - Canonical site URL: `src/lib/site.ts`
+  - Contact endpoint: `src/components/ContactSection.tsx`
 
 ### SEO / metadata
 
-- Localized metadata builder: `lib/metadata.ts`
-- Per-page titles/descriptions: `lib/seo.ts`
-- Robots + sitemap: `app/robots.ts`, `app/sitemap.ts`
+- Localized metadata builder: `src/lib/metadata.ts`
+- Per-page titles/descriptions: `src/lib/seo.ts`
+- Robots + sitemap: `src/app/robots.ts`, `src/app/sitemap.ts`
+
+### UI shell
+
+- App shell (layout + navigation): `src/components/AppShell.tsx`
+- Scroll/interaction logic (AppShell submodules): `src/components/app-shell/*`
 
 ## Tooling and commands
 
@@ -57,7 +62,7 @@ If something is defined in more than one place, this file decides which one is c
 
 ## Package manager deviation (MUST)
 
-This project uses `npm` for all commands.
+This project uses `npm` for all commands (deviation from the `dev-ssot` TypeScript Standard Set).
 
 ### Translation table (pnpm → npm)
 
@@ -76,5 +81,5 @@ deviation:
   alternatives_considered:
     - "Migrate to pnpm (Corepack) and replace package-lock.json"
   approver: "N/A (template baseline)"
-  decided_at: "2025-12-30T00:00:00Z"
+  decided_at: "2026-01-01T00:00:00Z"
 ```

@@ -11,7 +11,7 @@ A generic, bilingual (JA/EN) corporate website template built with Next.js (App 
 ## Features
 
 - Static export (`output: "export"`) for simple hosting
-- Bilingual routing (`/ja`, `/en`) with language switcher
+- Bilingual routing (`/ja`, `/en`) with language switcher + locale redirects
 - Pages: Home, About, Contact, Terms, Privacy, Legal
 - Responsive layout with theme toggle
 
@@ -32,6 +32,8 @@ Copy `.env.example` to `.env.local` and adjust as needed:
 - `NEXT_PUBLIC_SITE_URL` (required): Canonical site URL used for metadata, sitemap, and structured data.
 - `NEXT_PUBLIC_CONTACT_ENDPOINT` (optional): If set, the contact form will `POST` JSON to this endpoint.
 
+`NEXT_PUBLIC_SITE_URL` should be your production origin (e.g. `https://your-domain.com`). The default in `.env.example` is `http://localhost:3000` for local development.
+
 Contact form payload:
 
 ```json
@@ -51,24 +53,24 @@ Contact form payload:
 - `npm run lint`: Lint
 - `npm run typecheck`: TypeScript typecheck
 - `npm run format`: Format
-- `npm run verify`: Lint + format check + build
+- `npm run verify`: Lint + typecheck + format check + build
 
 ## Customization
 
-- Copy: `lib/translations/`
-- Navigation: `lib/config/navigation.ts`
-- Structured data: `lib/config/site.ts`
+- Copy: `src/lib/translations/`
+- Navigation: `src/lib/config/navigation.ts`
+- Structured data: `src/lib/config/site.ts`
 
 ## Branding (Text Logo)
 
 This template uses a text logo (no image assets) to keep setup simple and consistent.
 
-- Site name + short mark: `lib/config/branding.ts`
-- Logo sizing tokens (single source of truth): `app/globals.css` (`--brand-logo-*`)
+- Site name + short mark: `src/lib/config/branding.ts`
+- Logo sizing tokens (single source of truth): `src/app/globals.css` (`--brand-logo-*`)
 
 Defaults:
 
-- Full logo: `--brand-logo-height` (32px) and `--brand-logo-full-max-width` (220px)
-- Compact logo: `--brand-logo-square-size` (32px)
-- Typography: `--brand-logo-font-size` (20px)
+- Full logo: `--brand-logo-height` (36px) and `--brand-logo-full-max-width` (180px)
+- Compact logo: `--brand-logo-square-size` (36px)
+- Typography: `--brand-logo-font-size` (1.125rem)
 - Mobile safety: `--brand-logo-viewport-safe-offset` (120px)

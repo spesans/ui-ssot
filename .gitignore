@@ -1,24 +1,41 @@
-# OS / editor
+# OS files
 .DS_Store
+**/.DS_Store
+
+# Local tool configs
+.claude
+**/.claude
+.vscode
+**/.vscode
+.idea
+**/.idea
 
 # Dependencies
-**/node_modules/
+node_modules
+**/node_modules
 
-# Build outputs
-**/.next/
-**/out/
-**/dist/
-**/build/
-**/coverage/
+# Next.js build output
+.next
+**/.next
+out
+**/out
 
-# Env files
-**/.env*
-!**/.env.example
+# Build artifacts
+dist
+**/dist
+build
+**/build
+coverage
+**/coverage
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# Environment files
+.env*
+!.env.example
 
 # Logs
-**/*.log
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-

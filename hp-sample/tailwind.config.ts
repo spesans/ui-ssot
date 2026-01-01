@@ -1,18 +1,14 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        primary: "#3b82f6", // a calm blue
-        "primary-hover": "#2563eb",
+        primary: "rgb(var(--primary) / <alpha-value>)",
+        "primary-hover": "rgb(var(--primary-hover) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
@@ -21,4 +17,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;
