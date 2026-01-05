@@ -62,7 +62,9 @@ export function AppShell({ children, footer }: AppShellProps) {
   const [activeHash, setActiveHash] = useState("");
 
   const sidebarHeaderRef = useRef<HTMLDivElement>(null);
+  const sidebarToggleRef = useRef<HTMLButtonElement>(null);
   const topControlsRef = useRef<HTMLDivElement>(null);
+  const previousSidebarOpenRef = useRef(sidebarOpen);
 
   useScrollResponsiveHeader({
     sidebarOpen,
@@ -235,6 +237,27 @@ export function AppShell({ children, footer }: AppShellProps) {
     };
   }, [closeSidebar, langMenuOpen, sidebarOpen]);
 
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    if (!isMobileViewport) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMobileViewport, sidebarOpen]);
+
+  useEffect(() => {
+    const wasOpen = previousSidebarOpenRef.current;
+    previousSidebarOpenRef.current = sidebarOpen;
+
+    if (!isMobileViewport) return;
+    if (wasOpen && !sidebarOpen) {
+      sidebarToggleRef.current?.focus();
+    }
+  }, [isMobileViewport, sidebarOpen]);
+
   useLayoutEffect(() => {
     const pending = readUiNavigationState();
     if (!pending) return;
@@ -307,14 +330,7 @@ export function AppShell({ children, footer }: AppShellProps) {
         {t.a11y.skipToContent}
       </a>
 
-      <aside
-        id="site-sidebar"
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col ${
-          sidebarOpen
-            ? "w-[var(--sidebar-width)] border-r border-[var(--border-color)] bg-[var(--background)]"
-            : "w-0 border-r-0 bg-transparent"
-        }`}
-      >
+      <aside id="site-sidebar" data-open={sidebarOpen ? "true" : "false"} className="app-sidebar">
         <div className="flex h-full flex-col py-3 md:py-4">
           <div
             ref={sidebarHeaderRef}
@@ -322,21 +338,22 @@ export function AppShell({ children, footer }: AppShellProps) {
             data-stage="1"
             style={{ "--scroll-progress": 0 } as React.CSSProperties}
           >
-            <div className="sidebar-header__row pl-4 pr-3 flex items-center justify-between gap-2">
+            <div className="sidebar-header__row flex items-center justify-between gap-2">
               <Link
                 href={toLocalePath("/", routeLanguage)}
-                className="min-w-0 flex-1 pl-4 text-sm md:text-base font-semibold tracking-tight whitespace-nowrap relative"
+                className="brand-link min-w-0 flex-1 text-sm md:text-base font-semibold tracking-tight whitespace-nowrap relative"
                 aria-label={`${SITE_NAME} ${t.nav.home}`}
               >
                 <span className="logo-full relative flex items-center h-[var(--brand-logo-height)] w-[min(var(--brand-logo-full-max-width),calc(100vw-var(--brand-logo-viewport-safe-offset)))] max-w-full text-[length:var(--brand-logo-font-size)] font-bold tracking-tighter">
                   {SITE_NAME}
                 </span>
-                <span className="logo-square absolute left-0 top-1/2 opacity-0 pointer-events-none inline-flex items-center justify-center h-[var(--brand-logo-square-size)] w-[var(--brand-logo-square-size)] text-[length:var(--brand-logo-font-size)] font-bold tracking-tighter">
+                <span className="logo-square absolute top-1/2 opacity-0 pointer-events-none inline-flex items-center justify-center h-[var(--brand-logo-square-size)] w-[var(--brand-logo-square-size)] text-[length:var(--brand-logo-font-size)] font-bold tracking-tighter">
                   {SITE_NAME_SHORT}
                 </span>
               </Link>
 
               <button
+                ref={sidebarToggleRef}
                 type="button"
                 onClick={toggleSidebar}
                 className="sidebar-toggle shrink-0 flex items-center justify-center w-9 h-9 md:w-8 md:h-8 rounded-lg text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--accent-subtle)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)]"
@@ -354,7 +371,7 @@ export function AppShell({ children, footer }: AppShellProps) {
           </div>
 
           {sidebarOpen && (
-            <div className="pl-4 pr-3 flex-1 flex flex-col">
+            <div className="sidebar-content flex-1 flex flex-col">
               <div className="flex-1 flex items-center">
                 <nav className="flex flex-col gap-0.5 w-full">
                   {renderMenuItems("desktop", menuItems, handleNavigate)}
@@ -387,7 +404,7 @@ export function AppShell({ children, footer }: AppShellProps) {
 
                   {langMenuOpen && (
                     <div
-                      className="absolute bottom-full left-0 mb-2 py-2 bg-[var(--surface-2)] border border-[var(--border-color)] rounded-xl shadow-lg w-full max-h-[min(320px,calc(100vh-6rem))] overflow-y-auto overflow-x-hidden z-50"
+                      className="lang-menu absolute bottom-full mb-2 py-2 bg-[var(--surface-2)] border border-[var(--border-color)] rounded-xl shadow-lg w-full max-h-[min(320px,calc(100vh-6rem))] overflow-y-auto overflow-x-hidden z-50"
                       role="listbox"
                       aria-label={t.a11y.selectLanguage}
                     >
@@ -400,7 +417,7 @@ export function AppShell({ children, footer }: AppShellProps) {
                           onClick={() => {
                             handleLanguageSelect(lang);
                           }}
-                          className={`w-full px-4 py-2 text-start text-sm transition-colors ${
+                          className={`w-full px-4 py-2 text-start text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
                             language === lang
                               ? "bg-[var(--accent-subtle)] text-[var(--foreground)] font-medium"
                               : "text-[var(--text-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--foreground)]"
@@ -426,16 +443,13 @@ export function AppShell({ children, footer }: AppShellProps) {
         />
       )}
 
-      <div
-        ref={topControlsRef}
-        className="top-controls fixed top-[calc(env(safe-area-inset-top)+0.5rem)] right-[calc(env(safe-area-inset-right)+0.5rem)] md:top-4 md:right-4 z-40 flex items-center will-change-transform transition-transform transition-opacity duration-200 ease-out translate-y-0 opacity-100"
-        data-stage="1"
-      >
+      <div ref={topControlsRef} className="top-controls" data-stage="1">
         {renderControls()}
       </div>
 
       <div
-        className={`flex flex-col flex-1 ${sidebarOpen ? "md:pl-[var(--sidebar-width)]" : "pl-0"}`}
+        className="app-content flex flex-col flex-1"
+        data-sidebar-open={sidebarOpen ? "true" : "false"}
       >
         <main id="main-content" tabIndex={-1} className="flex-1 relative">
           {children}

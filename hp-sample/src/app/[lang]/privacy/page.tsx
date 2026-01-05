@@ -8,7 +8,7 @@ export default function Privacy() {
   const { t } = useLanguage();
 
   return (
-    <Container className="pt-16 pb-12 md:py-20">
+    <Container className="pt-20 pb-12 md:pt-24 md:pb-20">
       <div className="max-w-2xl mx-auto">
         <div className="mb-12 md:mb-16">
           <h1 className="text-2xl md:text-3xl font-semibold text-center mb-6">{t.privacy.title}</h1>

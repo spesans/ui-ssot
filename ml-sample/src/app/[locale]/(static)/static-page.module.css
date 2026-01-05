@@ -1,12 +1,14 @@
 .page {
   display: grid;
   gap: 16px;
-  padding-block: 16px;
+  padding-block-start: 28px;
+  padding-block-end: 16px;
 }
 
 @media (min-width: 768px) {
   .page {
-    padding-block: 20px;
+    padding-block-start: 32px;
+    padding-block-end: 20px;
   }
 }
 
