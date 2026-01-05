@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Neon Rain">
+  <defs>
+    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#22c55e" />
+      <stop offset="0.55" stop-color="#06b6d4" />
+      <stop offset="1" stop-color="#d946ef" />
+    </linearGradient>
+    <radialGradient id="r" cx="0.8" cy="0.2" r="0.9">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)" />
+  <rect width="512" height="512" rx="96" fill="url(#r)" />
+  <g opacity="0.55" stroke="#ffffff" stroke-linecap="round">
+    <path d="M150 142v228" stroke-width="14" />
+    <path d="M212 112v288" stroke-width="18" opacity="0.9" />
+    <path d="M276 156v224" stroke-width="14" opacity="0.8" />
+    <path d="M340 96v316" stroke-width="18" opacity="0.7" />
+  </g>
+  <path
+    d="M96 330c64-120 132 120 200 0s136 120 200 0"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="16"
+    stroke-linecap="round"
+    opacity="0.45"
+  />
+</svg>
+

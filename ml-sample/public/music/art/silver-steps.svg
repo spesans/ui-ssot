@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Silver Steps">
+  <defs>
+    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#0b1324" />
+      <stop offset="0.55" stop-color="#334155" />
+      <stop offset="1" stop-color="#93c5fd" />
+    </linearGradient>
+    <radialGradient id="r" cx="0.8" cy="0.2" r="0.9">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)" />
+  <rect width="512" height="512" rx="96" fill="url(#r)" />
+  <g fill="#ffffff" opacity="0.55">
+    <rect x="132" y="324" width="88" height="28" rx="14" />
+    <rect x="176" y="284" width="120" height="28" rx="14" opacity="0.92" />
+    <rect x="228" y="244" width="140" height="28" rx="14" opacity="0.84" />
+    <rect x="284" y="204" width="120" height="28" rx="14" opacity="0.74" />
+  </g>
+  <circle cx="176" cy="184" r="54" fill="#ffffff" opacity="0.12" />
+</svg>
+

@@ -1,0 +1,77 @@
+.page {
+  display: grid;
+  gap: 16px;
+  padding-block: 16px;
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding-block: 20px;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.lead {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.body {
+  margin: 0;
+  color: var(--text-subtle);
+  font-size: 15px;
+}
+
+.section {
+  display: grid;
+  gap: 12px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--border);
+}
+
+.sectionHeading {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.list {
+  margin: 0;
+  padding-inline-start: 18px;
+  color: var(--text-subtle);
+  display: grid;
+  gap: 6px;
+}
+
+.listItem {
+  margin: 0;
+}
+
+.linkList {
+  margin: 0;
+  padding-inline-start: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.linkRow {
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.placeholder {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  font-size: 0.95em;
+  color: var(--text-muted);
+}

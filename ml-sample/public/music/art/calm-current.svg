@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Calm Current">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f766e" />
+      <stop offset="0.6" stop-color="#0ea5e9" />
+      <stop offset="1" stop-color="#22c55e" />
+    </linearGradient>
+    <radialGradient id="r" cx="0.25" cy="0.2" r="0.85">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)" />
+  <rect width="512" height="512" rx="96" fill="url(#r)" />
+  <path
+    d="M116 312c42-86 88-86 140 0s98 86 140 0"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="18"
+    stroke-linecap="round"
+    opacity="0.55"
+  />
+  <circle cx="170" cy="180" r="54" fill="#ffffff" opacity="0.12" />
+  <circle cx="340" cy="216" r="82" fill="#ffffff" opacity="0.1" />
+</svg>
+

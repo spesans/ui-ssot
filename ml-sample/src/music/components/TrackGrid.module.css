@@ -1,0 +1,1501 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Carousel (Top) */
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-inline: 2px;
+  padding-block: 4px 24px;
+  /* Increased bottom padding for shadows/labels */
+  margin: 0;
+  margin-bottom: 24px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselButton {
+  flex: 0 0 auto;
+  display: block;
+  width: 120px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  scroll-snap-align: start;
+  position: relative;
+  outline: none;
+}
+
+.carouselCard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: transform 140ms ease;
+  isolation: isolate;
+  /* Safari fix for overflow: hidden with transform */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+
+  /* Static accent (no runtime palette extraction). */
+  --card-accent: color-mix(in srgb, var(--link-color) 55%, var(--foreground));
+}
+
+.carouselPlaceholder {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      color-mix(in srgb, var(--foreground) 12%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(135deg, var(--surface-2), var(--surface));
+  z-index: 1;
+}
+
+:global([data-theme="light"]) .carouselCard {
+  --card-accent: color-mix(in srgb, var(--link-color) 35%, white);
+}
+
+.carouselCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  /* On top of image */
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.6) 100%),
+    /* Text legibility at bottom */
+    radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+  /* Subtle vignette */
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  /* Glass edge */
+}
+
+:global([data-theme="light"]) .carouselCard::before {
+  background:
+    radial-gradient(
+      120% 120% at 50% 18%,
+      color-mix(in srgb, white 14%, transparent),
+      transparent 56%
+    ),
+    radial-gradient(130% 130% at 50% 88%, rgba(0, 0, 0, 0.12), transparent 66%);
+}
+
+.carouselCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition:
+    background 0.3s ease,
+    backdrop-filter 0.3s ease,
+    -webkit-backdrop-filter 0.3s ease;
+  pointer-events: none;
+}
+
+.cardBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(
+      90% 115% at 50% 120%,
+      color-mix(in srgb, var(--card-accent) 70%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      80% 80% at 18% 12%,
+      color-mix(in srgb, var(--card-accent) 26%, transparent),
+      transparent 60%
+    ),
+    /* Fallback/Base */ linear-gradient(150deg, var(--surface-2), var(--surface));
+}
+
+.cardGlow {
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: var(--card-accent);
+  filter: blur(34px);
+  opacity: 0.72;
+  z-index: 2;
+  mix-blend-mode: screen;
+}
+
+:global([data-theme="light"]) .cardGlow {
+  filter: blur(36px);
+  opacity: 0.28;
+  mix-blend-mode: normal;
+}
+
+/* Blurred Image Background Layer */
+.cardBlurredImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(20px) saturate(1.55) brightness(0.9);
+  opacity: 0.55;
+  z-index: 0;
+  transform: translate3d(0%, 6%, 0) scale(1.829);
+}
+
+:global([data-theme="light"]) .cardBlurredImage {
+  filter: blur(26px) saturate(1.25) brightness(1.06);
+  opacity: 0.45;
+}
+
+.cardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Fill the square */
+  transform: scale(1);
+  /* Reset scale to normal */
+  z-index: 3;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
+/* Dark mode image treatment: blended slightly to show atmosphere */
+:global([data-theme="dark"]) .cardImage {
+  mix-blend-mode: normal;
+  /* Keep normal for visibility, but rely on ::before overlay */
+}
+
+:global([data-theme="light"]) .cardImage {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+}
+
+.carouselLabel {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.25;
+  text-align: center;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+}
+
+.carouselButton:hover .carouselCard {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carouselButton:hover .carouselCard::after {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.carouselButton:hover .carouselLabel,
+.carouselButton:focus-visible .carouselLabel {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.carouselButton:focus-visible .carouselCard {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
+}
+
+.carouselCardActive {
+  border-color: var(--link-color);
+  outline: 2px solid color-mix(in srgb, var(--link-color) 30%, transparent);
+  outline-offset: 0;
+}
+
+/* =========================================
+   Tabs System (Chrome-like)
+   ========================================= */
+
+/*
+  Z-index ladder (within .root isolation):
+  1  - regular tabs
+  10 - content panel
+  20 - tabBar (scroll container)
+  30 - sticky first tab
+  50 - active tab
+  60 - focus ring (focus-visible)
+  100 - filter button (sticky right)
+*/
+
+.tabBar {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  background: var(--background);
+  background-clip: content-box;
+  padding: 0;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  position: relative;
+  z-index: 20;
+  align-items: flex-end;
+  scroll-behavior: smooth;
+  /* Negative margin to match tab bar overlap strategy */
+  margin-bottom: -5px;
+}
+
+.tabBar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Base Tab Styles */
+.tab {
+  flex: 0 0 auto;
+  position: relative;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.1s;
+  margin: 0;
+  z-index: 1;
+  /* Rendering hint for the sticky/overlap composition. */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Sticky first tab ("New Releases"): keep background opaque to prevent bleed-through. */
+.tab:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 30;
+  background: var(--background);
+  transform: translateZ(0);
+}
+
+/* Active State for First Child specific overrides */
+.tab:first-child.tabActive {
+  background: var(--content-background);
+  z-index: 50;
+}
+
+/* Hover/Focus */
+.tab:hover {
+  color: var(--foreground);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: -4px;
+  z-index: 60;
+}
+
+/* Active Tab Styles (Generic) */
+.tabActive {
+  background: var(--content-background);
+  color: var(--foreground);
+  font-weight: 600;
+  z-index: 50;
+  /* Bring active tab to front */
+
+  /*
+    "Pop-up" hierarchy: make the active tab taller (+4px).
+    Desktop: 16px -> 20px. Mobile override: 14px -> 18px.
+  */
+  padding-bottom: 20px;
+  margin-bottom: 0;
+  border-radius: 12px 12px 0 0;
+}
+
+/* =========================================
+   Scoop / Reverse R / Shoulders
+   ========================================= */
+.tabActive::before,
+.tabActive::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Left Scoop */
+.tabActive::before {
+  inset-inline-start: -20px;
+  background: radial-gradient(circle at 0 0, transparent 20px, var(--content-background) 20.5px);
+}
+
+/* Right Scoop */
+.tabActive::after {
+  inset-inline-end: -20px;
+  background: radial-gradient(circle at 100% 0, transparent 20px, var(--content-background) 20.5px);
+}
+
+:global([dir="rtl"]) .tabActive::before {
+  background: radial-gradient(circle at 100% 0, transparent 20px, var(--content-background) 20.5px);
+}
+
+:global([dir="rtl"]) .tabActive::after {
+  background: radial-gradient(circle at 0 0, transparent 20px, var(--content-background) 20.5px);
+}
+
+/* Hide Left Scoop for the first tab (flush left) */
+.tab:first-child.tabActive::before {
+  display: none;
+}
+
+/* =========================================
+   Mobile Overrides
+   ========================================= */
+@media (max-width: 767px) {
+  .tab {
+    padding: 14px 16px;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  /* Duplicate on mobile for robustness: do not remove (fixes transparency regressions). */
+  .tab:first-child {
+    background: var(--background, #000);
+  }
+
+  /* Active State Override for Mobile */
+  .tabActive,
+  .tab:first-child.tabActive {
+    background: var(--content-background);
+    padding-bottom: 18px;
+    /* Extend color down into the overlap zone */
+    margin-bottom: 0;
+    border-radius: 12px 12px 0 0;
+    /* Ensure z-index wins */
+    z-index: 50;
+  }
+}
+
+/* =========================================
+   Filter Button (Tab Bar Right Edge)
+   ========================================= */
+.filterButton {
+  flex: 0 0 auto;
+  position: sticky;
+  inset-inline-end: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: auto;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background: var(--background);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color 150ms var(--ui-ease),
+    background-color 150ms var(--ui-ease),
+    transform 150ms var(--ui-ease);
+}
+
+.filterButton::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -24px;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, transparent, var(--background));
+  pointer-events: none;
+}
+
+:global([dir="rtl"]) .filterButton::before {
+  background: linear-gradient(to left, transparent, var(--background));
+}
+
+.filterButton:hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, var(--background));
+}
+
+.filterButton:active {
+  transform: scale(0.96);
+}
+
+.filterButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+  z-index: 110;
+}
+
+.filterButtonIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+  transition: transform 200ms var(--ui-ease);
+}
+
+.filterButton:hover .filterButtonIcon {
+  transform: rotate(-8deg);
+}
+
+.filterButtonActive {
+  color: var(--link-color);
+}
+
+.filterButtonOpen {
+  color: var(--foreground);
+  background: var(--content-background);
+}
+
+.filterBadge {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--link-color);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .filterButton {
+    height: 40px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .filterButtonOpen {
+    background: var(--content-background);
+  }
+
+  .filterButtonOpen::before {
+    background: linear-gradient(to right, transparent, var(--content-background));
+  }
+
+  :global([dir="rtl"]) .filterButtonOpen::before {
+    background: linear-gradient(to left, transparent, var(--content-background));
+  }
+
+  .filterButtonOpen::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -5px;
+    height: 5px;
+    background: var(--content-background);
+    pointer-events: none;
+  }
+}
+
+/* =========================================
+   Content Panel
+   ========================================= */
+.contentPanel {
+  background: var(--content-background);
+  margin-top: 0;
+  padding-block: 24px 28px;
+  padding-inline: 16px;
+  border-radius: 20px;
+  border-start-start-radius: 16px;
+  border-start-end-radius: 16px;
+  position: relative;
+  z-index: 10;
+}
+
+/* =========================================
+   Filters / Search
+   ========================================= */
+.filters {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filtersBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  flex: 1 1 18rem;
+  min-width: min(18rem, 100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color-light);
+  background: var(--surface-2);
+  transition:
+    border-color 150ms var(--ui-ease),
+    background-color 150ms var(--ui-ease),
+    box-shadow 150ms var(--ui-ease);
+}
+
+.searchField:focus-within {
+  border-color: color-mix(in srgb, var(--link-color) 55%, var(--border-color));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--link-color) 22%, transparent);
+}
+
+.searchIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.searchInput::placeholder {
+  color: var(--text-subtle);
+}
+
+.clearSearchButton {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    color 150ms var(--ui-ease),
+    transform 150ms var(--ui-ease);
+}
+
+.clearSearchButton:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.clearSearchButton:active {
+  transform: translateY(1px);
+}
+
+.clearSearchButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.clearSearchIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.filtersButton {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color-light);
+  background: var(--surface-2);
+  color: var(--foreground);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 150ms var(--ui-ease),
+    border-color 150ms var(--ui-ease),
+    box-shadow 150ms var(--ui-ease),
+    transform 150ms var(--ui-ease);
+}
+
+.filtersButton:hover {
+  background: var(--surface-hover);
+}
+
+.filtersButton:active {
+  transform: translateY(1px);
+}
+
+.filtersButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.filtersButtonIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.filtersButtonLabel {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.filtersButtonChevron {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  transition: transform 200ms var(--ui-ease);
+}
+
+.filtersButtonChevronOpen {
+  transform: rotate(180deg);
+}
+
+.filtersMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  margin: 0 -12px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+}
+
+.resultsText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: -0.01em;
+}
+
+.clearAllButton {
+  border: 1px solid color-mix(in srgb, var(--link-color) 30%, transparent);
+  background: color-mix(in srgb, var(--link-color) 8%, transparent);
+  color: var(--link-color);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition:
+    background-color 150ms var(--ui-ease),
+    border-color 150ms var(--ui-ease),
+    transform 150ms var(--ui-ease);
+}
+
+.clearAllButton:hover {
+  background: color-mix(in srgb, var(--link-color) 16%, transparent);
+  border-color: color-mix(in srgb, var(--link-color) 50%, transparent);
+}
+
+.clearAllButton:active {
+  transform: translateY(1px);
+}
+
+.clearAllButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.selectedTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.selectedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding-block: 0;
+  padding-inline: 14px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--link-color) 35%, var(--border-color));
+  background: color-mix(in srgb, var(--link-color) 10%, var(--surface-2));
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background-color 150ms var(--ui-ease),
+    border-color 150ms var(--ui-ease),
+    transform 100ms var(--ui-ease),
+    box-shadow 150ms var(--ui-ease);
+}
+
+.selectedTag:hover {
+  background: color-mix(in srgb, var(--link-color) 16%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--link-color) 50%, var(--border-color));
+}
+
+.selectedTag:active {
+  transform: scale(0.97);
+}
+
+.selectedTag:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.selectedTagLabel {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectedTagIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+  transition: color 150ms var(--ui-ease);
+}
+
+.selectedTag:hover .selectedTagIcon {
+  color: var(--foreground);
+}
+
+@media (max-width: 767px) {
+  .selectedTags {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  .selectedTags::-webkit-scrollbar {
+    display: none;
+  }
+
+  .selectedTag {
+    flex: 0 0 auto;
+  }
+
+  .selectedTagLabel {
+    max-width: 10rem;
+  }
+}
+
+.filtersPanel {
+  border-radius: 16px;
+  border: 1px solid var(--border-color-light);
+  background: var(--surface);
+  padding: 12px;
+  display: grid;
+  gap: 14px;
+}
+
+.filtersPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.filtersPanelTitle {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.matchMode {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-2);
+}
+
+.matchButton {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    color 150ms var(--ui-ease);
+}
+
+.matchButton:hover {
+  color: var(--foreground);
+}
+
+.matchButtonActive {
+  background: color-mix(in srgb, var(--link-color) 16%, transparent);
+  color: var(--foreground);
+}
+
+.tagGroup {
+  display: grid;
+  gap: 10px;
+}
+
+.tagGroupHeading {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-subtle);
+}
+
+.tagButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tagButton {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    border-color 150ms var(--ui-ease),
+    color 150ms var(--ui-ease),
+    transform 100ms var(--ui-ease),
+    box-shadow 150ms var(--ui-ease);
+}
+
+.tagButton:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+  border-color: var(--border-color-strong);
+}
+
+.tagButton:active {
+  transform: scale(0.97);
+}
+
+.tagButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.tagButtonActive {
+  border-color: var(--link-color);
+  background: color-mix(in srgb, var(--link-color) 18%, var(--surface-2));
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.noResults {
+  border-radius: 16px;
+  border: 1px dashed color-mix(in srgb, var(--border-color-strong) 70%, transparent);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.noResultsTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.noResultsAction {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-2);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+  width: fit-content;
+  cursor: pointer;
+  transition:
+    transform 150ms var(--ui-ease),
+    background-color 150ms var(--ui-ease);
+}
+
+.noResultsAction:hover {
+  background: var(--surface-hover);
+}
+
+.noResultsAction:active {
+  transform: translateY(1px);
+}
+
+.noResultsAction:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+/* =========================================
+   Filter Overlay (Panel/Drawer)
+   ========================================= */
+.filterOverlayBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+  animation: filterBackdropIn 160ms ease-out;
+}
+
+@media (min-width: 768px) {
+  .filterOverlayBackdrop {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 24px;
+  }
+}
+
+.filterOverlay {
+  position: relative;
+  width: 100%;
+  max-height: 85vh;
+  max-height: 85dvh;
+  background: var(--surface);
+  border: 1px solid var(--border-color-light);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow:
+    0 -8px 40px rgba(0, 0, 0, 0.3),
+    0 0 1px rgba(0, 0, 0, 0.2);
+  animation: filterSheetIn 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 768px) {
+  .filterOverlay {
+    max-width: 420px;
+    max-height: 80vh;
+    max-height: 80dvh;
+    border: 1px solid var(--border-color-light);
+    border-radius: 20px;
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.3),
+      0 0 1px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: filterPanelIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.filterOverlayHeader {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px;
+  padding-inline: 20px;
+  border-bottom: 1px solid var(--border-color-light);
+  background: var(--surface);
+  box-sizing: border-box;
+  position: relative;
+}
+
+@media (max-width: 767px) {
+  .filterOverlayHeader {
+    padding-top: 28px;
+  }
+
+  .filterOverlayHeader::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--foreground) 24%, transparent);
+    transition: background-color 150ms var(--ui-ease);
+  }
+
+  .filterOverlayHeader:hover::before {
+    background: color-mix(in srgb, var(--foreground) 36%, transparent);
+  }
+}
+
+.filterOverlayTitle {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.filterOverlayClose {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    color 150ms var(--ui-ease),
+    transform 100ms var(--ui-ease);
+}
+
+.filterOverlayClose:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.filterOverlayClose:active {
+  transform: scale(0.92);
+}
+
+.filterOverlayClose:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.filterOverlayCloseIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.filterOverlayBody {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-block: 16px;
+  padding-inline: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filterSearchSection {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.filterSearchField {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding-block: 12px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color-light);
+  background: var(--surface-2);
+  box-sizing: border-box;
+  transition:
+    border-color 150ms var(--ui-ease),
+    box-shadow 150ms var(--ui-ease);
+}
+
+.filterSearchField:focus-within {
+  border-color: color-mix(in srgb, var(--link-color) 55%, var(--border-color));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--link-color) 22%, transparent);
+}
+
+.filterSearchIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+.filterSearchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.filterSearchInput::placeholder {
+  color: var(--text-subtle);
+}
+
+.filterSearchClear {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    color 150ms var(--ui-ease);
+}
+
+.filterSearchClear:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.filterSearchClear:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--surface-2),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.filterSearchClearIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.filterTagsSection {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filterTagsHeader {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+@media (max-width: 520px) {
+  .filterTagsHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .matchMode {
+    width: 100%;
+  }
+
+  .matchButton {
+    flex: 1;
+  }
+}
+
+.filterTagsTitle {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.filterOverlayFooter {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px;
+  padding-inline: 20px;
+  border-top: 1px solid var(--border-color-light);
+  background: var(--surface);
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .filterOverlayFooter {
+    padding-block-end: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
+.filterResultsText {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.filterResetButton {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-2);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    transform 150ms var(--ui-ease);
+}
+
+.filterResetButton:hover {
+  background: var(--surface-hover);
+}
+
+.filterResetButton:active {
+  transform: translateY(1px);
+}
+
+.filterResetButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterOverlayBackdrop,
+  .filterOverlay {
+    animation: none;
+  }
+}
+
+@keyframes filterBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes filterPanelIn {
+  from {
+    opacity: 0;
+    transform: translate3d(12px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes filterSheetIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/*
+   Panel Connection Logic:
+   When the first tab is active, the panel's top-left corner must be SQUARE (0 radius)
+   to perfectly join the vertical left edge of the tab.
+*/
+.root:has(.tab:first-child.tabActive) .contentPanel,
+.root:has(.tab:first-of-type.tabActive) .contentPanel {
+  border-start-start-radius: 0;
+}
+
+/* Grid Layout */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.item {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .carouselButton {
+    width: 140px;
+  }
+
+  .grid {
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carouselCard,
+  .carouselCard::after,
+  .carouselLabel,
+  .cardImage,
+  .tab {
+    transition: none;
+  }
+}
+
+/* =========================================
+   Pagination Footer
+   ========================================= */
+.paginationFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block-start: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.paginationText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: -0.01em;
+}
+
+.paginationNav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.paginationButton {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ui-ease),
+    border-color 150ms var(--ui-ease),
+    color 150ms var(--ui-ease),
+    transform 100ms var(--ui-ease);
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-color-strong);
+}
+
+.paginationButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.paginationButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.paginationButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.paginationIcon {
+  width: 20px;
+  height: 20px;
+}

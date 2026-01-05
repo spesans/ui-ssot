@@ -1,0 +1,30 @@
+.root {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  cursor: ew-resize;
+  border-radius: 10px;
+  transition: box-shadow 150ms var(--ui-ease);
+}
+
+.root:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background, var(--background)),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.scrubbing {
+  touch-action: none;
+  cursor: grabbing;
+}
+
+.disabled {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+}

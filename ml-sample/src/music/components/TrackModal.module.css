@@ -1,0 +1,291 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.75);
+  /* Darker backdrop for focus */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 200ms ease-out;
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  /* Default mobile max-width */
+  max-height: 90vh;
+  /* Allow some breathing room */
+  overflow-y: auto;
+  /* Scroll if needed */
+  background: var(--surface);
+  /* Use theme surface */
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 24px;
+  outline: none;
+  animation: slideUp 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.closeButton {
+  position: absolute;
+  inset-block-start: 16px;
+  inset-inline-end: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.closeButton:active {
+  transform: scale(0.92);
+}
+
+.closeButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.artWrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  align-self: center;
+}
+
+.art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: start;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+.artist {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.tags {
+  margin-top: 8px;
+}
+
+.waveSection {
+  display: grid;
+  gap: 8px;
+}
+
+.waveWrap {
+  width: 100%;
+  height: 48px;
+  /* Slightly taller for interaction */
+  display: flex;
+  align-items: center;
+}
+
+.timeRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+.time {
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* Space between buttons */
+  margin-top: 8px;
+}
+
+.actionButton {
+  height: 48px;
+  flex: 1;
+  border-radius: 24px;
+  border: none;
+  background: var(--surface-2);
+  color: var(--foreground);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    background 0.15s ease,
+    opacity 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.actionButton:hover {
+  transform: translateY(-2px);
+  background: var(--surface-hover);
+  text-decoration: none;
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+.actionButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.actionButtonMain {
+  background: var(--foreground);
+  color: var(--background);
+  flex: 1.5;
+}
+
+.actionButtonMain:hover {
+  opacity: 0.85;
+  background: var(--foreground);
+}
+
+.actionButtonMain:active {
+  opacity: 0.75;
+}
+
+.actionButtonActive {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.actionIcon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Desktop Side-by-Side Layout */
+@media (min-width: 768px) {
+  .modal {
+    max-width: 800px;
+    flex-direction: row;
+    /* Horizontal layout */
+    align-items: flex-start;
+    /* Align top */
+    padding: 32px;
+    gap: 32px;
+    max-height: 600px;
+    /* shorter but wider */
+    overflow: hidden;
+    /* no default scroll if fits */
+  }
+
+  .artWrap {
+    width: 320px;
+    height: 320px;
+    flex: 0 0 320px;
+    /* Fixed size */
+  }
+
+  .body {
+    flex: 1;
+    height: 100%;
+    justify-content: center;
+    /* Center content vertically relative to art */
+    padding-top: 16px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .artist {
+    font-size: 18px;
+  }
+
+  .closeButton {
+    /* Move close button outside or to corner cleanly */
+    inset-block-start: 20px;
+    inset-inline-end: 20px;
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .closeButton:hover {
+    color: var(--foreground);
+    background: var(--surface-hover);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,50 @@
+.toggle {
+  width: var(--ui-control-size);
+  height: var(--ui-control-size);
+  padding: 0;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  opacity: 0.8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 150ms var(--ui-ease),
+    opacity 150ms var(--ui-ease),
+    background-color 150ms var(--ui-ease),
+    box-shadow 150ms var(--ui-ease),
+    transform 150ms var(--ui-ease);
+}
+
+.toggle:hover {
+  color: var(--foreground);
+  opacity: 1;
+  background-color: var(--accent-subtle);
+}
+
+.toggle:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.toggle:active {
+  transform: translateY(1px);
+}
+
+.icon {
+  width: var(--ui-icon-size);
+  height: var(--ui-icon-size);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    transition: none;
+  }
+}

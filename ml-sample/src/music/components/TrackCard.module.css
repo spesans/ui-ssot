@@ -1,0 +1,367 @@
+.card {
+  position: relative;
+  display: grid;
+  /* Fixed grid: art+text | waveform | actions */
+  grid-template-columns: 240px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding-block: 8px;
+  padding-inline: 8px 16px;
+  border-radius: 8px;
+  background: transparent;
+  width: 100%;
+  cursor: pointer;
+  transition: background 150ms ease;
+  z-index: 1;
+}
+
+.card:hover {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.card:focus-within {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.card:active {
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+/* --- Start Group: Art + Text --- */
+.startGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  /* allows text truncation */
+  max-width: 100%;
+}
+
+.artWrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  padding: 0;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 4px;
+  /* More square like generic music apps */
+  overflow: hidden;
+  cursor: pointer;
+  background: #222;
+}
+
+.art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.2s ease;
+}
+
+.artOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #fff;
+}
+
+/* Show overlay on hover (desktop) or if playing (anywhere) */
+@media (hover: hover) {
+  .artWrapper:hover .artOverlay {
+    opacity: 1;
+  }
+}
+
+.artOverlayVisible {
+  opacity: 1;
+}
+
+.artWrapper:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
+}
+
+.artWrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  /* truncate helper */
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.artistName {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.metaSep {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* --- Center Group: Waveform --- */
+.centerGroup {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.waveWrap {
+  width: 100%;
+  display: block;
+}
+
+/* --- End Group: Actions --- */
+
+.desktopActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobileMenu {
+  display: none;
+  /* Hidden by default on desktop */
+  position: relative;
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.iconButton:hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.iconButton:active {
+  transform: scale(0.92);
+}
+
+.iconButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--content-background, var(--background)),
+    0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
+}
+
+.iconButtonActive {
+  color: var(--link-color);
+}
+
+.iconButtonShare:hover,
+.iconButtonDownload:hover {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Menu Popover --- */
+.cardMenuOpen {
+  z-index: 100;
+  /* Ensure active card is above overlapping siblings */
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.menuPopover {
+  position: absolute;
+  top: 100%;
+  inset-inline-end: 0;
+  margin-top: -4px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 1px rgba(0, 0, 0, 0.2);
+  padding: 6px;
+  min-width: 180px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: menuPopIn 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes menuPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 12px;
+  padding-inline: 14px;
+  min-height: 44px;
+  width: 100%;
+  text-align: start;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.menuItem:hover {
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  text-decoration: none;
+}
+
+.menuItem:active {
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.menuItem:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--link-color) 60%, transparent);
+}
+
+.menuItem svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* --- Tablet breakpoint --- */
+@media (max-width: 900px) {
+  .card {
+    grid-template-columns: 220px 1fr auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    grid-template-columns: 200px 1fr auto;
+  }
+}
+
+/* --- Mobile / Responsive --- */
+@media (max-width: 600px) {
+  .card {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-block: 8px;
+    padding-inline: 8px 4px;
+    gap: 8px;
+  }
+
+  .startGroup {
+    flex: 1;
+    min-width: 0;
+    max-width: calc(100% - 48px);
+    padding-inline-end: 8px;
+  }
+
+  /* Hide Waveform on mobile */
+  .centerGroup {
+    display: none;
+  }
+
+  /* Hide Desktop buttons */
+  .desktopActions {
+    display: none;
+  }
+
+  /* Show Mobile Menu */
+  .mobileMenu {
+    display: block;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .artWrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .text {
+    gap: 3px;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+
+  .metaRow {
+    gap: 6px;
+  }
+
+  .artistName {
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+}

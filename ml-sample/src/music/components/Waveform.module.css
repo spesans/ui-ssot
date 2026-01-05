@@ -1,0 +1,11 @@
+.svg {
+  display: block;
+}
+
+.bar {
+  fill: color-mix(in srgb, var(--foreground) 26%, transparent);
+}
+
+.barActive {
+  fill: var(--foreground);
+}
