@@ -2,7 +2,7 @@
   --track-title-font-size: 14px;
   --track-title-max-chars: 10;
   --track-start-width: calc(
-    48px + 16px + (var(--track-title-max-chars) + 1) * var(--track-title-font-size)
+    48px + 16px + var(--track-title-max-chars) * var(--track-title-font-size)
   );
   --track-wave-width: 260px;
 

@@ -31,17 +31,6 @@ type Props = {
 type ShareState = "idle" | "copied" | "shared";
 
 const DEFAULT_ARTIST = BRAND.shortName;
-const TITLE_MAX_CHARS = 10;
-
-function truncateTitle(input: string, maxChars: number) {
-  const chars = Array.from(input);
-  if (chars.length <= maxChars) return input;
-  return `${chars.slice(0, maxChars).join("")}…`;
-}
-
-function toFullWidthDigits(input: string) {
-  return input.replace(/\d/g, (digit) => String.fromCharCode(digit.charCodeAt(0) + 0xfee0));
-}
 
 function PlayIcon({ isPlaying }: { isPlaying: boolean }) {
   if (isPlaying) {
@@ -124,13 +113,6 @@ export default function TrackCard({
   const progress = isCurrent ? player.progress : 0;
   const duration = isCurrent ? player.duration : 0;
   const artist = track.artist ?? DEFAULT_ARTIST;
-
-  const titleTruncated = !isMobile && Array.from(track.title).length > TITLE_MAX_CHARS;
-  const rawDisplayTitle = titleTruncated
-    ? truncateTitle(track.title, TITLE_MAX_CHARS)
-    : track.title;
-  const displayTitle =
-    titleTruncated && locale === "ja" ? toFullWidthDigits(rawDisplayTitle) : rawDisplayTitle;
 
   // Handle menu outside click
   useEffect(() => {
@@ -256,7 +238,7 @@ export default function TrackCard({
 
         <div className={styles.text}>
           <h3 className={styles.title} title={track.title}>
-            {displayTitle}
+            {track.title}
           </h3>
           {isMobile ? (
             <div className={styles.metaRow}>

@@ -22,7 +22,7 @@ export const SAMPLE_TRACKS: Track[] = [
   {
     id: "sample-1",
     slug: "sample-1",
-    title: "サンプル音源1234567",
+    title: "サンプル音源1",
     artist: "Music Library",
     albumArtSrc: "/music/art/aurora-drift.svg",
     audioSrc: "/music/audio/aurora-drift.wav",
