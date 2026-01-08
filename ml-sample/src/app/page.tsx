@@ -41,9 +41,14 @@ export default function IndexPage() {
   }, []);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(LOCALE_COOKIE_NAME);
-    const storedLocale = isLocale(stored ?? undefined) ? stored : null;
-    const locale = storedLocale ?? pickLocaleFromNavigator();
+    let stored: string | null = null;
+    try {
+      stored = window.localStorage.getItem(LOCALE_COOKIE_NAME);
+    } catch {
+      stored = null;
+    }
+
+    const locale = isLocale(stored) ? stored : pickLocaleFromNavigator();
     router.replace(`/${locale}/`);
   }, [router]);
 

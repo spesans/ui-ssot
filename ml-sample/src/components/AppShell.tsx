@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, PanelLeft, PanelLeftClose } from "lucide-react";
@@ -20,6 +21,7 @@ import {
 } from "@/i18n/locales";
 import type { UIStrings } from "@/i18n/ui";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/lib/ThemeContext";
 import styles from "./AppShell.module.css";
 
 type AppShellProps = {
@@ -58,6 +60,7 @@ function replaceLocaleInPathname(pathname: string, nextLocale: Locale) {
 export default function AppShell({ locale, ui, children, footer }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme } = useTheme();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -237,7 +240,16 @@ export default function AppShell({ locale, ui, children, footer }: AppShellProps
                 aria-label={`${BRAND.name} home`}
               >
                 <span className={`${styles.logoFull} logo-full`}>{BRAND.wordmark}</span>
-                <span className={`${styles.logoSquare} logo-square`}>{BRAND.monogram}</span>
+                <span className={`${styles.logoSquare} logo-square`}>
+                  <Image
+                    src={theme === "dark" ? "/brand/icon-dark.svg" : "/brand/icon-light.svg"}
+                    alt={BRAND.name}
+                    width={36}
+                    height={36}
+                    className={styles.logoSquareImage}
+                    priority
+                  />
+                </span>
               </Link>
 
               <button

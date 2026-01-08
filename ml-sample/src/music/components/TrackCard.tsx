@@ -31,12 +31,16 @@ type Props = {
 type ShareState = "idle" | "copied" | "shared";
 
 const DEFAULT_ARTIST = BRAND.shortName;
-const TITLE_MAX_CHARS = 15;
+const TITLE_MAX_CHARS = 10;
 
 function truncateTitle(input: string, maxChars: number) {
   const chars = Array.from(input);
   if (chars.length <= maxChars) return input;
-  return `${chars.slice(0, maxChars - 1).join("")}…`;
+  return `${chars.slice(0, maxChars).join("")}…`;
+}
+
+function toFullWidthDigits(input: string) {
+  return input.replace(/\d/g, (digit) => String.fromCharCode(digit.charCodeAt(0) + 0xfee0));
 }
 
 function PlayIcon({ isPlaying }: { isPlaying: boolean }) {
@@ -112,6 +116,8 @@ export default function TrackCard({
   const menuId = useId();
 
   const ui = useMemo(() => getUIStrings(locale), [locale]);
+  const trackHash = `track=${encodeURIComponent(track.slug)}`;
+  const trackLink = `#${trackHash}`;
 
   const isCurrent = player.currentTrackId === track.id;
   const isPlaying = isCurrent && player.isPlaying;
@@ -119,9 +125,12 @@ export default function TrackCard({
   const duration = isCurrent ? player.duration : 0;
   const artist = track.artist ?? DEFAULT_ARTIST;
 
-  // Use JS truncation ONLY on desktop to prevent waveform squashing per user request
-  // On mobile, CSS handles truncation (ellipsis) to use full width
-  const displayTitle = !isMobile ? truncateTitle(track.title, TITLE_MAX_CHARS) : track.title;
+  const titleTruncated = !isMobile && Array.from(track.title).length > TITLE_MAX_CHARS;
+  const rawDisplayTitle = titleTruncated
+    ? truncateTitle(track.title, TITLE_MAX_CHARS)
+    : track.title;
+  const displayTitle =
+    titleTruncated && locale === "ja" ? toFullWidthDigits(rawDisplayTitle) : rawDisplayTitle;
 
   // Handle menu outside click
   useEffect(() => {
@@ -169,13 +178,14 @@ export default function TrackCard({
     async (event?: ReactMouseEvent<HTMLElement>) => {
       event?.stopPropagation();
 
-      const url = window.location.href;
+      const url = new URL(window.location.href);
+      url.hash = trackHash;
       try {
         if (typeof navigator.share === "function") {
-          await navigator.share({ title: track.title, url });
+          await navigator.share({ title: track.title, url: url.toString() });
           setShareState("shared");
         } else {
-          await navigator.clipboard.writeText(url);
+          await navigator.clipboard.writeText(url.toString());
           setShareState("copied");
         }
       } catch (error) {
@@ -192,7 +202,7 @@ export default function TrackCard({
         setShareState("idle");
       }, 1200);
     },
-    [track.title],
+    [trackHash, track.title],
   );
 
   const handleCardClick = useCallback(
@@ -203,7 +213,7 @@ export default function TrackCard({
       if (
         target.closest(`.${styles.iconButton}`) ||
         target.closest(`.${styles.artWrapper}`) ||
-        target.closest(`.${styles.menuContainer}`) ||
+        target.closest(`.${styles.menuPopover}`) ||
         target.closest(`a`)
       ) {
         return;
@@ -277,48 +287,24 @@ export default function TrackCard({
         />
       </div>
 
-      {/* Desktop Actions */}
-      <div className={styles.desktopActions}>
-        <button
-          type="button"
-          className={`${styles.iconButton} ${styles.iconButtonShare} ${
-            shareState !== "idle" ? styles.iconButtonActive : ""
-          }`}
-          onClick={(event) => void handleShare(event)}
-          aria-label={`${shareLabel} ${track.title}`}
-          title={shareLabel}
-        >
-          <ShareIcon />
-        </button>
+      <div className={styles.actions} ref={menuRef}>
+        <div className={styles.desktopDownload}>
+          <button
+            type="button"
+            className={`${styles.iconButton} ${styles.iconButtonDownload}`}
+            aria-label={`${ui.download} ${track.title}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onDownload();
+            }}
+          >
+            <DownloadIcon />
+          </button>
+          <span role="tooltip" className={styles.downloadTooltip}>
+            {ui.download}
+          </span>
+        </div>
 
-        <button
-          type="button"
-          className={`${styles.iconButton} ${styles.iconButtonDownload}`}
-          aria-label={`${ui.download} ${track.title}`}
-          onClick={(event) => {
-            event.stopPropagation();
-            onDownload();
-          }}
-        >
-          <DownloadIcon />
-        </button>
-
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label={`${ui.details} ${track.title}`}
-          title={ui.details}
-          onClick={(event) => {
-            event.stopPropagation();
-            onOpen();
-          }}
-        >
-          <InfoIcon />
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      <div className={styles.mobileMenu} ref={menuRef}>
         <button
           type="button"
           className={styles.iconButton}
@@ -336,6 +322,18 @@ export default function TrackCard({
 
         {menuOpen && (
           <div id={menuId} className={styles.menuPopover}>
+            <a
+              href={trackLink}
+              className={styles.menuItem}
+              onClick={(event) => {
+                event.stopPropagation();
+                setMenuOpen(false);
+                onOpen();
+              }}
+            >
+              <InfoIcon />
+              <span>{ui.details}</span>
+            </a>
             <button
               type="button"
               className={styles.menuItem}
@@ -347,26 +345,14 @@ export default function TrackCard({
             <button
               type="button"
               className={styles.menuItem}
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={(event) => {
+                event.stopPropagation();
                 setMenuOpen(false);
                 onDownload();
               }}
             >
               <DownloadIcon />
               <span>{ui.download}</span>
-            </button>
-            <button
-              type="button"
-              className={styles.menuItem}
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen(false);
-                onOpen();
-              }}
-            >
-              <InfoIcon />
-              <span>{ui.details}</span>
             </button>
           </div>
         )}

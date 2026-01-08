@@ -33,6 +33,19 @@ function normalizeSearchQuery(input: string) {
   return input.trim().toLowerCase();
 }
 
+function trackSlugFromHash(hash: string) {
+  const trimmed = hash.trim();
+  if (!trimmed) return null;
+  const withoutHash = trimmed.startsWith("#") ? trimmed.slice(1) : trimmed;
+  if (!withoutHash) return null;
+  const query = withoutHash.startsWith("?") ? withoutHash.slice(1) : withoutHash;
+  const params = new URLSearchParams(query);
+  const value = params.get("track");
+  if (!value) return null;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
 function trackSearchText(track: Track, locale: Locale, tagsById: Record<string, Tag>) {
   const parts: string[] = [track.title];
   if (track.artist) parts.push(track.artist);
@@ -40,6 +53,7 @@ function trackSearchText(track: Track, locale: Locale, tagsById: Record<string, 
 
   for (const tagId of track.tags ?? []) {
     parts.push(tagId);
+    if (!Object.prototype.hasOwnProperty.call(tagsById, tagId)) continue;
     const tag = tagsById[tagId];
     parts.push(tag.group);
     const localizedTagLabel =
@@ -136,7 +150,24 @@ export default function TrackGrid({ tracks, tags, locale }: TrackGridProps) {
   }, [currentPage, visibleTracks]);
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 520px)");
+    const openTrackFromHash = () => {
+      const slug = trackSlugFromHash(window.location.hash);
+      if (!slug) return;
+      const match =
+        tracks.find((track) => track.slug === slug) ?? tracks.find((track) => track.id === slug);
+      if (!match) return;
+      setOpenTrackId(match.id);
+    };
+
+    openTrackFromHash();
+    window.addEventListener("hashchange", openTrackFromHash);
+    return () => {
+      window.removeEventListener("hashchange", openTrackFromHash);
+    };
+  }, [tracks]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 600px)");
     const update = () => {
       setCompactCards(media.matches);
     };

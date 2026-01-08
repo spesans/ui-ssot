@@ -1,10 +1,17 @@
 .card {
+  --track-title-font-size: 14px;
+  --track-title-max-chars: 10;
+  --track-start-width: calc(
+    48px + 16px + (var(--track-title-max-chars) + 1) * var(--track-title-font-size)
+  );
+  --track-wave-width: 260px;
+
   position: relative;
   display: grid;
   /* Fixed grid: art+text | waveform | actions */
-  grid-template-columns: 240px 1fr auto;
+  grid-template-columns: var(--track-start-width) minmax(0, 1fr) max-content;
   align-items: center;
-  gap: 16px;
+  gap: 16px var(--track-title-font-size);
   padding-block: 8px;
   padding-inline: 8px 16px;
   border-radius: 8px;
@@ -104,7 +111,7 @@
 
 .title {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--track-title-font-size);
   font-weight: 500;
   color: var(--foreground);
   white-space: nowrap;
@@ -130,14 +137,6 @@
   line-height: 1.3;
 }
 
-.metaSep {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1;
-  opacity: 0.6;
-  flex-shrink: 0;
-}
-
 /* --- Center Group: Waveform --- */
 .centerGroup {
   display: flex;
@@ -146,22 +145,58 @@
 }
 
 .waveWrap {
-  width: 100%;
+  width: var(--track-wave-width);
+  max-width: 100%;
   display: block;
 }
 
 /* --- End Group: Actions --- */
 
-.desktopActions {
+.actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  flex-shrink: 0;
+  justify-self: end;
 }
 
-.mobileMenu {
-  display: none;
-  /* Hidden by default on desktop */
+.desktopDownload {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.downloadTooltip {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-end: calc(100% + 10px);
+  transform: translate(-50%, 4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1100;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  color: var(--foreground);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    0 0 1px rgba(0, 0, 0, 0.2);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+@media (hover: hover) {
+  .desktopDownload:hover .downloadTooltip,
+  .desktopDownload:focus-within .downloadTooltip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .iconButton {
@@ -199,11 +234,6 @@
     0 0 0 4px color-mix(in srgb, var(--link-color) 70%, transparent);
 }
 
-.iconButtonActive {
-  color: var(--link-color);
-}
-
-.iconButtonShare:hover,
 .iconButtonDownload:hover {
   color: var(--foreground);
   text-decoration: none;
@@ -299,13 +329,13 @@
 /* --- Tablet breakpoint --- */
 @media (max-width: 900px) {
   .card {
-    grid-template-columns: 220px 1fr auto;
+    --track-wave-width: 240px;
   }
 }
 
 @media (max-width: 768px) {
   .card {
-    grid-template-columns: 200px 1fr auto;
+    --track-wave-width: 220px;
   }
 }
 
@@ -322,8 +352,6 @@
   .startGroup {
     flex: 1;
     min-width: 0;
-    max-width: calc(100% - 48px);
-    padding-inline-end: 8px;
   }
 
   /* Hide Waveform on mobile */
@@ -331,16 +359,12 @@
     display: none;
   }
 
-  /* Hide Desktop buttons */
-  .desktopActions {
-    display: none;
+  .actions {
+    z-index: 10;
   }
 
-  /* Show Mobile Menu */
-  .mobileMenu {
-    display: block;
-    flex-shrink: 0;
-    z-index: 10;
+  .desktopDownload {
+    display: none;
   }
 
   .artWrapper {

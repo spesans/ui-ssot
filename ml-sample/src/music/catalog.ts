@@ -6,7 +6,3 @@ export function getCatalog() {
     tracks: SAMPLE_TRACKS,
   };
 }
-
-export function getCatalogTracks() {
-  return getCatalog().tracks;
-}
