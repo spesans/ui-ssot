@@ -21,14 +21,7 @@ export function PanelLink({ href, onClick, children, ...rest }: PanelLinkProps) 
       : href;
 
   return (
-    <Link
-      href={localizedHref}
-      scroll={scroll}
-      onClick={(event) => {
-        onClick?.(event);
-      }}
-      {...restProps}
-    >
+    <Link href={localizedHref} scroll={scroll} onClick={onClick} {...restProps}>
       {children}
     </Link>
   );

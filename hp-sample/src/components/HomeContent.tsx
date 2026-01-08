@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { AboutSection } from "@/components/AboutSection";
 import { ContactSection } from "@/components/ContactSection";
+import { HeroMatrixBackground } from "@/components/HeroMatrixBackground";
 import { Zap, Music, Share2, Brain, Cloud, TrendingUp } from "lucide-react";
 
 export function HomeContent() {
@@ -22,8 +23,9 @@ export function HomeContent() {
 
   return (
     <div className="flex flex-col">
-      <section className="min-h-[60vh] md:min-h-[80vh] flex items-center justify-center py-16 md:py-0">
-        <Container className="text-center">
+      <section className="hero-section isolate min-h-[60vh] md:min-h-[80vh] flex items-center justify-center py-16 md:py-0">
+        <HeroMatrixBackground />
+        <Container className="relative z-10 text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight mb-6 md:mb-8 whitespace-pre-wrap leading-[1.1]">
             {t.home.heroTitle}
           </h1>
@@ -41,7 +43,7 @@ export function HomeContent() {
         </Container>
       </section>
 
-      <section id="business" className="py-16 md:py-24 border-t border-[var(--border-color)]">
+      <section id="business" className="py-16 md:py-24">
         <Container>
           <h2 className="text-xl md:text-2xl font-semibold mb-10 md:mb-14 text-center">
             {t.home.businessTitle}

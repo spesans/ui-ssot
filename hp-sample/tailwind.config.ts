@@ -8,7 +8,6 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: "rgb(var(--primary) / <alpha-value>)",
-        "primary-hover": "rgb(var(--primary-hover) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],

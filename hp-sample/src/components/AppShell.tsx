@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Moon, PanelLeft, PanelLeftClose, Sun } from "lucide-react";
@@ -17,7 +18,7 @@ import {
   stripLocaleFromPath,
   toLocalePath,
 } from "@/lib/locale";
-import { SITE_NAME, SITE_NAME_SHORT } from "@/lib/config/branding";
+import { SITE_NAME } from "@/lib/config/branding";
 import {
   clearUiNavigationState,
   readUiNavigationState,
@@ -128,8 +129,8 @@ export function AppShell({ children, footer }: AppShellProps) {
 
       const baseClasses =
         variant === "mobile"
-          ? "relative flex items-center gap-2 justify-between w-full py-3 text-2xl font-medium tracking-tight transition-colors"
-          : "relative flex items-center gap-2 justify-between w-full px-4 py-2.5 min-h-[40px] rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)]";
+          ? "sidebar-nav-item relative flex items-center gap-2 justify-between w-full py-3 text-2xl font-medium tracking-tight transition-colors"
+          : "sidebar-nav-item relative flex items-center gap-2 justify-between w-full px-4 py-2.5 min-h-[40px] rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)]";
 
       const activeClasses =
         variant === "mobile"
@@ -162,9 +163,10 @@ export function AppShell({ children, footer }: AppShellProps) {
             rel="noreferrer"
             onClick={onNavigate}
             className={className}
+            data-active={isActive ? "true" : "false"}
           >
-            <span className="flex-1 text-start">{item.label}</span>
-            <span className="text-[var(--text-subtle)] text-sm" aria-hidden>
+            <span className="relative z-10 flex-1 text-start">{item.label}</span>
+            <span className="relative z-10 text-[var(--text-subtle)] text-sm" aria-hidden>
               ↗
             </span>
           </a>
@@ -183,8 +185,9 @@ export function AppShell({ children, footer }: AppShellProps) {
             onNavigate?.();
           }}
           className={className}
+          data-active={isActive ? "true" : "false"}
         >
-          {item.label}
+          <span className="relative z-10">{item.label}</span>
         </Link>
       );
     });
@@ -347,8 +350,15 @@ export function AppShell({ children, footer }: AppShellProps) {
                 <span className="logo-full relative flex items-center h-[var(--brand-logo-height)] w-[min(var(--brand-logo-full-max-width),calc(100vw-var(--brand-logo-viewport-safe-offset)))] max-w-full text-[length:var(--brand-logo-font-size)] font-bold tracking-tighter">
                   {SITE_NAME}
                 </span>
-                <span className="logo-square absolute top-1/2 opacity-0 pointer-events-none inline-flex items-center justify-center h-[var(--brand-logo-square-size)] w-[var(--brand-logo-square-size)] text-[length:var(--brand-logo-font-size)] font-bold tracking-tighter">
-                  {SITE_NAME_SHORT}
+                <span className="logo-square absolute top-1/2 opacity-0 pointer-events-none inline-flex items-center justify-center h-[var(--brand-logo-square-size)] w-[var(--brand-logo-square-size)]">
+                  <Image
+                    src={theme === "dark" ? "/brand/icon-dark.svg" : "/brand/icon-light.svg"}
+                    alt={SITE_NAME}
+                    width={36}
+                    height={36}
+                    className="w-full h-full"
+                    priority
+                  />
                 </span>
               </Link>
 
@@ -385,10 +395,10 @@ export function AppShell({ children, footer }: AppShellProps) {
                     onClick={() => {
                       setLangMenuOpen(!langMenuOpen);
                     }}
-                    className={`w-full flex items-center justify-between gap-2 px-4 py-2.5 min-h-[40px] rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)] ${
+                    className={`w-full flex items-center justify-between gap-2 px-4 py-2.5 min-h-[40px] rounded-lg text-sm font-medium bg-[var(--surface-2)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)] ${
                       langMenuOpen
-                        ? "bg-[var(--surface-2)] text-[var(--foreground)]"
-                        : "text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-2)]"
+                        ? "text-[var(--foreground)]"
+                        : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                     }`}
                     aria-expanded={langMenuOpen}
                     aria-haspopup="listbox"
@@ -404,7 +414,7 @@ export function AppShell({ children, footer }: AppShellProps) {
 
                   {langMenuOpen && (
                     <div
-                      className="lang-menu absolute bottom-full mb-2 py-2 bg-[var(--surface-2)] border border-[var(--border-color)] rounded-xl shadow-lg w-full max-h-[min(320px,calc(100vh-6rem))] overflow-y-auto overflow-x-hidden z-50"
+                      className="lang-menu absolute bottom-full mb-2 p-1.5 bg-[var(--surface-2)] border border-[var(--border-color)] rounded-xl shadow-lg w-full max-h-[min(320px,calc(100vh-6rem))] overflow-y-auto overflow-x-hidden z-50"
                       role="listbox"
                       aria-label={t.a11y.selectLanguage}
                     >
@@ -417,9 +427,9 @@ export function AppShell({ children, footer }: AppShellProps) {
                           onClick={() => {
                             handleLanguageSelect(lang);
                           }}
-                          className={`w-full px-4 py-2 text-start text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
+                          className={`w-full h-10 px-3 text-start text-[13px] rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-indicator)] ${
                             language === lang
-                              ? "bg-[var(--accent-subtle)] text-[var(--foreground)] font-medium"
+                              ? "bg-[var(--accent-subtle)] text-[var(--foreground)] font-bold"
                               : "text-[var(--text-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--foreground)]"
                           }`}
                         >

@@ -19,7 +19,7 @@ export const ja = {
     contact: "お問い合わせ",
     terms: "利用規約",
     legal: "法的情報",
-    privacy: "プライバシー",
+    privacy: "プライバシーポリシー",
   },
   home: {
     heroTitle: "キャッチコピーが\nここに入ります",

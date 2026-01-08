@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -50,10 +50,7 @@ export function ContactSection({ headingLevel = "h2" }: ContactSectionProps) {
   const inputBaseClass =
     "w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--text-subtle)] hover:border-[var(--input-border-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--input-ring)] focus-visible:border-[var(--input-border-focus)] transition-colors";
 
-  const honeypotClass = useMemo(
-    () => `${inputBaseClass} opacity-0 h-0 p-0 border-0`,
-    [inputBaseClass],
-  );
+  const honeypotClass = `${inputBaseClass} opacity-0 h-0 p-0 border-0`;
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
