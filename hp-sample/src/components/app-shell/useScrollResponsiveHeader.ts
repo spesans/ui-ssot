@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type RefObject } from "react";
+import { useLayoutEffect, useRef, type RefObject } from "react";
 
 type UseScrollResponsiveHeaderArgs = {
   sidebarOpen: boolean;
@@ -13,8 +13,13 @@ export function useScrollResponsiveHeader({
   sidebarHeaderRef,
   topControlsRef,
 }: UseScrollResponsiveHeaderArgs) {
-  useEffect(() => {
+  const previousSidebarOpenRef = useRef(sidebarOpen);
+
+  useLayoutEffect(() => {
     if (typeof window === "undefined") return;
+
+    const wasSidebarOpen = previousSidebarOpenRef.current;
+    previousSidebarOpenRef.current = sidebarOpen;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const prefersMobileLayout = window.matchMedia("(max-width: 767px)");
@@ -22,6 +27,7 @@ export function useScrollResponsiveHeader({
     let rafId = 0;
     let latestScrollY = window.scrollY;
     let lastAppliedScrollY = window.scrollY;
+    let lastMobileStage: "1" | "3" = wasSidebarOpen && !sidebarOpen ? "1" : "3";
 
     const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -97,6 +103,14 @@ export function useScrollResponsiveHeader({
       const sidebarHeader = sidebarHeaderRef.current;
       if (!sidebarHeader) return;
 
+      if (sidebarHeader.dataset.scrollReady !== "true") {
+        sidebarHeader.dataset.scrollReady = "true";
+      }
+      const topControls = topControlsRef.current;
+      if (topControls && topControls.dataset.scrollReady !== "true") {
+        topControls.dataset.scrollReady = "true";
+      }
+
       if (prefersReducedMotion.matches) {
         sidebarHeader.style.setProperty("--scroll-progress", "0");
         setStages({ headerStage: "1", topControlsStage: "1" });
@@ -114,21 +128,34 @@ export function useScrollResponsiveHeader({
 
       const stage2Threshold = 40;
       const desktopStage3Threshold = Math.max(480, Math.round(window.innerHeight * 1.2));
-      const stage3Threshold = isMobileLayout ? stage2Threshold : desktopStage3Threshold;
 
       let stage: "1" | "2" | "3" = "1";
-      if (scrollY >= stage3Threshold) {
-        stage = "3";
-      } else if (!isMobileLayout && scrollY >= stage2Threshold) {
-        stage = "2";
+      if (isMobileLayout) {
+        if (deltaY > 0) {
+          stage = "3";
+        } else if (deltaY < 0) {
+          stage = "1";
+        } else {
+          stage = lastMobileStage;
+        }
+      } else {
+        if (scrollY >= desktopStage3Threshold) {
+          stage = "3";
+        } else if (scrollY >= stage2Threshold) {
+          stage = "2";
+        }
+
+        if (stage === "3" && deltaY < 0) {
+          stage = "2";
+        }
       }
 
-      if (stage === "3" && deltaY < 0) {
-        stage = isMobileLayout ? "1" : "2";
+      if (isMobileLayout) {
+        lastMobileStage = stage === "3" ? "3" : "1";
       }
 
       const headerStage = sidebarOpen ? "1" : stage;
-      const headerProgress = sidebarOpen ? 0 : progress;
+      const headerProgress = sidebarOpen || isMobileLayout ? 0 : progress;
       sidebarHeader.style.setProperty("--scroll-progress", headerProgress.toString());
 
       setStages({
@@ -140,13 +167,14 @@ export function useScrollResponsiveHeader({
       setInteractiveHidden(topControlsRef.current, stage === "3");
     };
 
+    update();
+
     const onScroll = () => {
       latestScrollY = window.scrollY;
       if (rafId) return;
       rafId = window.requestAnimationFrame(update);
     };
 
-    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const onMotionChange = () => {

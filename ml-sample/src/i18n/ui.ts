@@ -27,6 +27,7 @@ export type UIStrings = {
   applyHere: string;
   cancel: string;
   preparing: string;
+  downloading: string;
   share: string;
   copied: string;
   shared: string;
@@ -88,6 +89,7 @@ const UI: Partial<Record<Locale, UIStrings>> = {
     applyHere: "リンクを開く",
     cancel: "キャンセル",
     preparing: "準備中…",
+    downloading: "ダウンロード中…",
     share: "共有",
     copied: "コピーしました",
     shared: "共有しました",
@@ -149,6 +151,7 @@ const UI: Partial<Record<Locale, UIStrings>> = {
     applyHere: "Open link",
     cancel: "Cancel",
     preparing: "Preparing…",
+    downloading: "Downloading…",
     share: "Share",
     copied: "Copied",
     shared: "Shared",
