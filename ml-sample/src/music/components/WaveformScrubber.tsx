@@ -149,6 +149,7 @@ export default function WaveformScrubber({
         if (!canScrub) return;
         if (e.pointerType === "mouse" && e.button !== 0) return;
 
+        e.currentTarget.focus({ preventScroll: true });
         stopScrub();
 
         if (e.pointerType === "mouse") {
