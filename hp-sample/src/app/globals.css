@@ -390,6 +390,20 @@ body {
     inset-inline-start: 0;
   }
 
+  @media (max-width: 767px) {
+    .sidebar-header:not([data-scroll-ready="true"]) .sidebar-header__row {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+    }
+
+    .top-controls:not([data-scroll-ready="true"]) {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+    }
+  }
+
   /* Scroll-responsive Sidebar Header */
   .sidebar-header {
     height: calc(56px - (16px * var(--scroll-progress, 0)));
