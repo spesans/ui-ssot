@@ -20,10 +20,28 @@ type Props = {
   onClose: () => void;
 };
 
+const MAX_STREAM_BUFFER_BYTES = 10 * 1024 * 1024;
+const PROGRESS_UPDATE_INTERVAL_MS = 120;
+
 function pickDefaultDownload(track: Track) {
   return (
     track.downloads.find((download) => download.variant === "full") ?? track.downloads.at(0) ?? null
   );
+}
+
+function resolveFilename(directUrl: string, track: Track, format?: string) {
+  const fallbackExtension = format?.trim().toLowerCase();
+  const fallbackName = fallbackExtension ? `${track.slug}.${fallbackExtension}` : track.slug;
+
+  try {
+    const resolved = new URL(directUrl, window.location.href);
+    const lastSegment = resolved.pathname.split("/").filter(Boolean).at(-1);
+    if (!lastSegment) return fallbackName;
+    if (lastSegment.includes(".")) return lastSegment;
+    return fallbackExtension ? `${lastSegment}.${fallbackExtension}` : lastSegment;
+  } catch {
+    return fallbackName;
+  }
 }
 
 function formatBytes(bytes: number) {
@@ -42,8 +60,12 @@ export default function DownloadDialog({ track, locale, isOpen, onClose }: Props
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const downloadAbortRef = useRef<AbortController | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [bytesReceived, setBytesReceived] = useState(0);
+  const [bytesTotal, setBytesTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const ui = useMemo(() => getUIStrings(locale), [locale]);
@@ -52,7 +74,12 @@ export default function DownloadDialog({ track, locale, isOpen, onClose }: Props
   const canSubmit = !!download && (!requiresAgreement || agreed) && !isSubmitting;
 
   const requestClose = useCallback(() => {
+    downloadAbortRef.current?.abort();
+    downloadAbortRef.current = null;
     setIsSubmitting(false);
+    setIsStreaming(false);
+    setBytesReceived(0);
+    setBytesTotal(null);
     onClose();
   }, [onClose]);
 
@@ -76,7 +103,14 @@ export default function DownloadDialog({ track, locale, isOpen, onClose }: Props
     };
   }, [isOpen]);
 
-  const handleDownload = useCallback(() => {
+  useEffect(() => {
+    return () => {
+      downloadAbortRef.current?.abort();
+      downloadAbortRef.current = null;
+    };
+  }, []);
+
+  const handleDownload = useCallback(async () => {
     if (!download) return;
     if (requiresAgreement && !agreed) return;
 
@@ -88,13 +122,143 @@ export default function DownloadDialog({ track, locale, isOpen, onClose }: Props
 
     setError(null);
     setIsSubmitting(true);
+    setIsStreaming(false);
+    setBytesReceived(0);
+    setBytesTotal(null);
+
+    const directFilename = resolveFilename(directUrl, track, download.format);
+
+    if (typeof download.sizeBytes === "number" && download.sizeBytes > MAX_STREAM_BUFFER_BYTES) {
+      try {
+        window.location.assign(directUrl);
+        requestClose();
+      } catch {
+        setError(ui.downloadErrorGeneric);
+        setIsSubmitting(false);
+        setIsStreaming(false);
+      }
+      return;
+    }
+
+    const abortController = new AbortController();
+    downloadAbortRef.current?.abort();
+    downloadAbortRef.current = abortController;
+
     try {
-      window.location.assign(directUrl);
-    } catch {
+      const response = await fetch(directUrl, { signal: abortController.signal });
+      if (!response.ok) {
+        throw new Error(`Download request failed with status ${String(response.status)}`);
+      }
+
+      const headerTotalRaw = response.headers.get("content-length");
+      const headerTotal = headerTotalRaw ? Number(headerTotalRaw) : Number.NaN;
+      const resolvedTotal =
+        Number.isFinite(headerTotal) && headerTotal > 0
+          ? headerTotal
+          : typeof download.sizeBytes === "number" && download.sizeBytes > 0
+            ? download.sizeBytes
+            : null;
+      setBytesTotal(resolvedTotal);
+
+      if (typeof resolvedTotal === "number" && resolvedTotal > MAX_STREAM_BUFFER_BYTES) {
+        try {
+          window.location.assign(directUrl);
+          requestClose();
+        } catch {
+          setError(ui.downloadErrorGeneric);
+          setIsSubmitting(false);
+          setIsStreaming(false);
+        }
+        return;
+      }
+
+      if (!response.body) {
+        try {
+          window.location.assign(directUrl);
+          requestClose();
+        } catch {
+          setError(ui.downloadErrorGeneric);
+          setIsSubmitting(false);
+          setIsStreaming(false);
+        }
+        return;
+      }
+
+      setIsStreaming(true);
+
+      const reader = response.body.getReader();
+      const chunks: ArrayBuffer[] = [];
+      let receivedBytes = 0;
+      let lastUiUpdateAt = 0;
+
+      let readResult = await reader.read();
+      while (!readResult.done) {
+        const chunk = readResult.value;
+        receivedBytes += chunk.byteLength;
+
+        if (receivedBytes > MAX_STREAM_BUFFER_BYTES) {
+          try {
+            window.location.assign(directUrl);
+            requestClose();
+          } catch {
+            setError(ui.downloadErrorGeneric);
+            setIsSubmitting(false);
+            setIsStreaming(false);
+          }
+          return;
+        }
+
+        const bufferCopy = new ArrayBuffer(chunk.byteLength);
+        new Uint8Array(bufferCopy).set(chunk);
+        chunks.push(bufferCopy);
+
+        const now = Date.now();
+        if (now - lastUiUpdateAt >= PROGRESS_UPDATE_INTERVAL_MS) {
+          lastUiUpdateAt = now;
+          setBytesReceived(receivedBytes);
+        }
+
+        readResult = await reader.read();
+      }
+
+      setBytesReceived(receivedBytes);
+
+      const blob = new Blob(chunks, { type: response.headers.get("content-type") ?? undefined });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = directFilename;
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+      }, 0);
+
+      requestClose();
+    } catch (error_) {
+      if (error_ instanceof DOMException && error_.name === "AbortError") {
+        return;
+      }
+
+      try {
+        window.location.assign(directUrl);
+        requestClose();
+        return;
+      } catch {
+        // Keep the error UI fallback below.
+      }
+
       setError(ui.downloadErrorGeneric);
       setIsSubmitting(false);
+      setIsStreaming(false);
+    } finally {
+      if (downloadAbortRef.current === abortController) {
+        downloadAbortRef.current = null;
+      }
     }
-  }, [agreed, download, requiresAgreement, track.audioSrc, ui]);
+  }, [agreed, download, requestClose, requiresAgreement, track, ui]);
 
   const onDialogKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -206,6 +370,35 @@ export default function DownloadDialog({ track, locale, isOpen, onClose }: Props
           )}
         </section>
 
+        {isSubmitting && (
+          <div className={styles.progressSection}>
+            <p role="status" aria-live="polite" className={styles.progressStatus}>
+              {isStreaming ? ui.downloading : ui.preparing}
+            </p>
+            {isStreaming && (
+              <progress
+                className={styles.progressBar}
+                max={typeof bytesTotal === "number" && bytesTotal > 0 ? bytesTotal : undefined}
+                value={
+                  typeof bytesTotal === "number" && bytesTotal > 0
+                    ? Math.min(bytesReceived, bytesTotal)
+                    : undefined
+                }
+              />
+            )}
+            <div className={styles.progressMeta}>
+              <span className={styles.progressBytes}>{formatBytes(bytesReceived)}</span>
+              {typeof bytesTotal === "number" && bytesTotal > 0 ? (
+                <span className={styles.progressPercent}>
+                  {String(Math.min(100, Math.round((bytesReceived / bytesTotal) * 100)))}%
+                </span>
+              ) : (
+                <span className={styles.progressPercent} aria-hidden="true" />
+              )}
+            </div>
+          </div>
+        )}
+
         {error && (
           <div className={styles.error} role="alert">
             {error}
@@ -225,11 +418,11 @@ export default function DownloadDialog({ track, locale, isOpen, onClose }: Props
             type="button"
             className={`${styles.button} ${styles.primary}`}
             onClick={() => {
-              handleDownload();
+              void handleDownload();
             }}
             disabled={!canSubmit}
           >
-            {isSubmitting ? ui.preparing : ui.download}
+            {isSubmitting ? (isStreaming ? ui.downloading : ui.preparing) : ui.download}
           </button>
         </div>
       </div>
